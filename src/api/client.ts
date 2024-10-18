@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-   const apiClient = axios.create({
-     baseURL: '/api', // This will use the proxy we set up in vite.config.ts
-     headers: {
-       'Content-Type': 'application/json',
-     },
-   });
+const apiClient = axios.create({
+  baseURL: import.meta.env.RAILS_API_BASE_URL || '/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-   export default apiClient;
+export default apiClient;
