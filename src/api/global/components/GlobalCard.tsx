@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from '@mui/material'
 
-interface CustomCardProps {
+interface Props {
   children: React.ReactNode;
   width?: string | number;
   height?: string | number;
@@ -9,7 +9,7 @@ interface CustomCardProps {
   style?: React.CSSProperties;
 }
 
-const CustomCard: React.FC<CustomCardProps> = ({
+const GlobalCard: React.FC<Props> = ({
   children,
   width: width,
   height: height,
@@ -30,4 +30,4 @@ const CustomCard: React.FC<CustomCardProps> = ({
   );
 };
 
-export default CustomCard;
+export default GlobalCard;
