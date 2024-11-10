@@ -8,14 +8,14 @@ interface Props {
     title?: string;
 }
 
-const ButtonContained: React.FC<Props> = ({
+const ButtonOutlined: React.FC<Props> = ({
     width: width,
     height: height,
     padding: padding,
     title: title
 }) => {
     return(
-        <Button variant="contained" style={{
+        <Button variant="outlined" style={{
             width: width,
             height: height,
             padding: padding,
@@ -25,4 +25,4 @@ const ButtonContained: React.FC<Props> = ({
     );
 };
 
-export default ButtonContained;
+export default ButtonOutlined;
