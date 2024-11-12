@@ -46,7 +46,7 @@ export const login = createAsyncThunk(
   'auth/login',
   async (credentials: LoginCredentials, { rejectWithValue }) => {
     try {
-      const response = await axios.post<LoginResponse>('/api/v1/sessions/login', credentials);
+      const response = await axios.post<LoginResponse>('api/v1/login', credentials);
       const { token, user } = response.data;
       localStorage.setItem('token', token);
       return { token, user };
@@ -67,7 +67,7 @@ export const fetchCurrentUser = createAsyncThunk(
   'auth/fetchCurrentUser',
   async (_, { rejectWithValue, getState }) => {
     try {
-      const response = await axios.get<{ user: User }>('/api/v1/sessions/me', {
+      const response = await axios.get<{ user: User }>('/api/v1/me', {
         headers: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           Authorization: `Bearer ${(getState() as any).auth.token}`
@@ -88,7 +88,7 @@ export const logout = createAsyncThunk(
   'auth/logout',
   async (_, { rejectWithValue, getState }) => {
     try {
-      await axios.delete('/api/v1/sessions/logout', {
+      await axios.delete('/api/v1/logout', {
         headers: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           Authorization: `Bearer ${(getState() as any).auth.token}`
