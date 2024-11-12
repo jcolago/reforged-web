@@ -1,19 +1,21 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AppDispatch } from './redux/store';
+import { AppDispatch } from '../../redux/store';
 import { 
   selectIsAuthenticated, 
   selectAuthStatus, 
   fetchCurrentUser 
-} from './redux/reducers/auth.reducer';
+} from '../../redux/reducers/auth.reducer';
+
+import './App.css'
 
 // Import your components
-import LandingPage from './components/LandingPage/LandingPage';
-import RegistrationPage from './components/RegistrationPage/RegistrationPage';
-import Nav from './components/Nav/Nav';
-import Footer from './components/Footer/Footer';
-import UserDashboard from './components/UserDashboard/UserDashboard';
+import LandingPage from '../LandingPage/LandingPage';
+import RegistrationPage from '../RegistrationPage/RegistrationPage';
+import Nav from '../Nav/Nav';
+import Footer from '../Footer/Footer';
+import UserDashboard from '../UserDashboard/UserDashboard';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
