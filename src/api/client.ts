@@ -1,28 +1,34 @@
 import axios from 'axios';
 
-const apiClient = axios.create({
-  baseURL: '/api/v1', // Make sure this matches your Rails routes
-  headers: {
-    'Content-Type': 'application/json',
+// Create axios instance with default config
+const api = axios.create({
+  baseURL: '/api/v1', // adjust based on your API URL
+});
+
+// Add a request interceptor to include token
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
   },
-});
-
-// Add request interceptor for auth token
-apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-// Add response interceptor for error handling
-apiClient.interceptors.response.use(
-  (response) => response,
   (error) => {
-    console.error('API Error:', error);
     return Promise.reject(error);
   }
 );
 
-export default apiClient;
+// Add a response interceptor to handle unauthorized responses
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      // Optionally redirect to login or dispatch a logout action
+    }
+    return Promise.reject(error);
+  }
+);
+
+export default api;

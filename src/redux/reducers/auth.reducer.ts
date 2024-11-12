@@ -67,15 +67,29 @@ export const fetchCurrentUser = createAsyncThunk(
   'auth/fetchCurrentUser',
   async (_, { rejectWithValue }) => {
     try {
-      console.log(localStorage.token)
+      const token = localStorage.token;
+      console.log('Fetching current user with token:', token);
+
+      if (!token) {
+        throw new Error('No token found');
+      }
+
       const response = await axios.get<{ user: User }>('/api/v1/me', {
         headers: {
-          Authorization: `Bearer ${localStorage.token}`
+          Authorization: `Bearer ${token}`
         }
       });
+
+      console.log('Current user response:', response.data);
       return response.data.user;
     } catch (error) {
+      console.error('Error fetching current user:', error);
+      
       if (axios.isAxiosError(error)) {
+        // Handle 401 Unauthorized errors
+        if (error.response?.status === 401) {
+          localStorage.removeItem('token');
+        }
         return rejectWithValue(error.response?.data?.error || 'Failed to fetch user');
       }
       return rejectWithValue('An unexpected error occurred');

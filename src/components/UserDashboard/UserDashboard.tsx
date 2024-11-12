@@ -30,7 +30,7 @@ const UserDashboard: React.FC = () => {
 
   // Redux selectors with proper typing
   const games = useSelector((state: RootState) => state.game.games);
-  const user = useSelector((state: RootState) => state.user.currentUser);
+  const user = useSelector((state: RootState) => state.auth.user);
   console.log(user)
 //   const gameStatus = useSelector((state: RootState) => state.game.status);
 
