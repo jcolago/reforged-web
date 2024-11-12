@@ -1,18 +1,19 @@
-import { combineReducers } from "@reduxjs/toolkit"
-import user from "./user.reducer"
-import player from "./player.reducer"
-import monster from "./monster.reducer"
-import condition from "./condition.reducer"
-import playerCondition from "./player_condition.reducer"
-import game from "./game.reducer"
+import { combineReducers } from "@reduxjs/toolkit";
+import userReducer from "./user.reducer";
+import playerReducer from "./player.reducer";
+import monsterReducer from "./monster.reducer";
+import conditionReducer from "./condition.reducer";
+import playerConditionReducer from "./player_condition.reducer";
+import gameReducer from "./game.reducer";
 
 const rootReducer = combineReducers({
-user,
-player,
-monster,
-condition,
-playerCondition,
-game
-})
+  user: userReducer,
+  player: playerReducer,
+  monster: monsterReducer,
+  condition: conditionReducer,
+  playerCondition: playerConditionReducer,
+  game: gameReducer
+});
 
-export default rootReducer
+export type RootState = ReturnType<typeof rootReducer>;
+export default rootReducer;

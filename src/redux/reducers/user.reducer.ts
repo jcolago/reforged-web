@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 // Types
-interface User {
+export interface User {
   id: number;
   email: string;
   // Add other user properties as needed
