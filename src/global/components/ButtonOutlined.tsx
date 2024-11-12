@@ -13,7 +13,7 @@ interface Props {
     className?: string;
 }
 
-const ButtonContained: React.FC<Props> = ({
+const ButtonOutlined: React.FC<Props> = ({
     width,
     height,
     padding,
@@ -26,7 +26,7 @@ const ButtonContained: React.FC<Props> = ({
 }) => {
     return (
         <Button 
-            variant="contained" 
+            variant="outlined" 
             onClick={onClick}
             type={type}
             disabled={disabled}
@@ -42,4 +42,4 @@ const ButtonContained: React.FC<Props> = ({
     );
 };
 
-export default ButtonContained;
+export default ButtonOutlined;

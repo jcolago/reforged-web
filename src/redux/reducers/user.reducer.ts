@@ -1,147 +1,139 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 // Types
 interface User {
   id: number;
   email: string;
-  // Add other user properties as needed
-}
-
-interface LoginCredentials {
-  email: string;
-  password: string;
-}
-
-interface AuthToken {
-  token: string;
+  // Add other user fields but exclude password_digest as per your controller
 }
 
 interface UserState {
+  users: User[];
   currentUser: User | null;
-  token: string | null;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
-  error: string | null;
+  error: string | null | Record<string, string[]>;
 }
 
-// Define RootState type
-export interface RootState {
-  user: UserState;
-  // Add other slice states as needed
-}
-
-// Initial state
-const initialState: UserState = {
-  currentUser: null,
-  token: localStorage.getItem('token'),
-  status: 'idle',
-  error: null
-};
-
-// Async thunks
-export const login = createAsyncThunk<
-  string,
-  LoginCredentials,
-  { rejectValue: string }
->(
-  'user/login',
-  async (credentials, { rejectWithValue }) => {
-    try {
-      const response = await axios.post<AuthToken>('/api/v1/login', credentials);
-      const token = response.data.token;
-      localStorage.setItem('token', token);
-      return token;
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        return rejectWithValue(error.response.data.error || 'Login failed');
-      }
-      return rejectWithValue('Login failed');
-    }
-  }
-);
-
-export const fetchCurrentUser = createAsyncThunk<
-  User,
-  void,
-  { state: RootState; rejectValue: string }
->(
-  'user/fetchCurrentUser',
-  async (_, { getState, rejectWithValue }) => {
-    try {
-      const token = getState().user.token;
-      if (!token) {
-        throw new Error('No token available');
-      }
-      
-      const response = await axios.get<{ user: User }>('/api/v1/me', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      return response.data.user;
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        return rejectWithValue(error.response.data.error || 'Failed to fetch user');
-      }
-      return rejectWithValue('Failed to fetch user');
-    }
-  }
-);
-
-export const logout = createAsyncThunk<
-  void,
-  void,
-  { state: RootState; rejectValue: string }
->(
-  'user/logout',
-  async (_, { getState, rejectWithValue }) => {
-    try {
-      const token = getState().user.token;
-      if (!token) {
-        throw new Error('No token available');
-      }
-
-      await axios.delete('/api/v1/logout', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      localStorage.removeItem('token');
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        return rejectWithValue(error.response.data.error || 'Logout failed');
-      }
-      return rejectWithValue('Logout failed');
-    }
-  }
-);
-
-interface RegisterUserData {
+interface CreateUserData {
   email: string;
   password: string;
   password_confirmation: string;
 }
 
-export const registerUser = createAsyncThunk<
-  User,
-  RegisterUserData,
-  { rejectValue: string }
->(
-  'user/register',
-  async (userData, { rejectWithValue }) => {
+interface UpdateUserData {
+  email?: string;
+  password?: string;
+  password_confirmation?: string;
+}
+
+const initialState: UserState = {
+  users: [],
+  currentUser: null,
+  status: 'idle',
+  error: null
+};
+
+// Async thunks
+export const fetchUsers = createAsyncThunk(
+  'user/fetchUsers',
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.post<User>('/api/v1/users', { user: userData });
+      const response = await axios.get('/api/v1/users');
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        return rejectWithValue(error.response.data.error || 'Registration failed');
+      if (axios.isAxiosError(error)) {
+        return rejectWithValue(error.response?.data || 'Failed to fetch users');
+      }
+      return rejectWithValue('An unexpected error occurred');
+    }
+  }
+);
+
+export const fetchUser = createAsyncThunk(
+  'user/fetchUser',
+  async (id: number, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`/api/v1/users/${id}`);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        return rejectWithValue(error.response?.data || 'Failed to fetch user');
+      }
+      return rejectWithValue('An unexpected error occurred');
+    }
+  }
+);
+
+export const createUser = createAsyncThunk(
+  'user/createUser',
+  async (userData: CreateUserData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post('/api/v1/users', {
+        user: userData // Wrap in user object as required by Rails strong parameters
+      });
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 422) {
+        // Handle validation errors from Rails
+        return rejectWithValue(error.response.data);
       }
       return rejectWithValue('Registration failed');
     }
   }
 );
 
-// Slice
+export const updateUser = createAsyncThunk(
+  'user/updateUser',
+  async ({ id, userData }: { id: number; userData: UpdateUserData }, { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(`/api/v1/users/${id}`, {
+        user: userData // Wrap in user object as required by Rails strong parameters
+      });
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 422) {
+        // Handle validation errors from Rails
+        return rejectWithValue(error.response.data);
+      }
+      return rejectWithValue('Failed to update user');
+    }
+  }
+);
+
+export const deleteUser = createAsyncThunk(
+  'user/deleteUser',
+  async (id: number, { rejectWithValue }) => {
+    try {
+      await axios.delete(`/api/v1/users/${id}`);
+      return id;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        return rejectWithValue(error.response?.data || 'Failed to delete user');
+      }
+      return rejectWithValue('An unexpected error occurred');
+    }
+  }
+);
+
+export const loginUser = createAsyncThunk(
+  'user/loginUser',
+  async (credentials: { email: string; password: string }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post('/api/v1/users/login', credentials);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          return rejectWithValue('Invalid email or password');
+        }
+        return rejectWithValue(error.response?.data?.error || 'Login failed');
+      }
+      return rejectWithValue('An unexpected error occurred');
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -149,65 +141,107 @@ const userSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    clearCurrentUser: (state) => {
+      state.currentUser = null;
+    },
   },
   extraReducers: (builder) => {
     builder
-      // Login
-      .addCase(login.pending, (state) => {
+      // Fetch Users
+      .addCase(fetchUsers.pending, (state) => {
         state.status = 'loading';
-        state.error = null;
       })
-      .addCase(login.fulfilled, (state, action: PayloadAction<string>) => {
+      .addCase(fetchUsers.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.token = action.payload;
+        state.users = action.payload;
       })
-      .addCase(login.rejected, (state, action) => {
+      .addCase(fetchUsers.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload ?? 'Login failed';
+        state.error = action.payload as string;
       })
-      // Fetch Current User
-      .addCase(fetchCurrentUser.pending, (state) => {
+      // Fetch Single User
+      .addCase(fetchUser.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(fetchCurrentUser.fulfilled, (state, action: PayloadAction<User>) => {
-        state.status = 'succeeded';
-        state.currentUser = action.payload;
-      })
-      .addCase(fetchCurrentUser.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload ?? 'Failed to fetch user';
-      })
-      // Logout
-      .addCase(logout.fulfilled, (state) => {
-        state.currentUser = null;
-        state.token = null;
-        state.status = 'idle';
-      })
-      .addCase(logout.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload ?? 'Logout failed';
-      })
-      // Register
-      .addCase(registerUser.pending, (state) => {
-        state.status = 'loading';
-        state.error = null;
-      })
-      .addCase(registerUser.fulfilled, (state, action: PayloadAction<User>) => {
+      .addCase(fetchUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.currentUser = action.payload;
       })
-      .addCase(registerUser.rejected, (state, action) => {
+      .addCase(fetchUser.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload ?? 'Registration failed';
+        state.error = action.payload as string;
+      })
+      // Create User
+      .addCase(createUser.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(createUser.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.currentUser = action.payload;
+        state.users.push(action.payload);
+      })
+      .addCase(createUser.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as Record<string, string[]>;
+      })
+      // Update User
+      .addCase(updateUser.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        const index = state.users.findIndex(user => user.id === action.payload.id);
+        if (index !== -1) {
+          state.users[index] = action.payload;
+        }
+        if (state.currentUser?.id === action.payload.id) {
+          state.currentUser = action.payload;
+        }
+      })
+      .addCase(updateUser.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as Record<string, string[]>;
+      })
+      // Delete User
+      .addCase(deleteUser.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.users = state.users.filter(user => user.id !== action.payload);
+        if (state.currentUser?.id === action.payload) {
+          state.currentUser = null;
+        }
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
+      })
+      // Login User
+      .addCase(loginUser.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.currentUser = action.payload;
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
       });
   },
 });
 
-// Selectors
-export const selectCurrentUser = (state: RootState) => state.user.currentUser;
-export const selectToken = (state: RootState) => state.user.token;
-export const selectUserStatus = (state: RootState) => state.user.status;
-export const selectUserError = (state: RootState) => state.user.error;
+export const { clearError, clearCurrentUser } = userSlice.actions;
 
-export const { clearError } = userSlice.actions;
+// Selectors
+export const selectAllUsers = (state: { user: UserState }) => state.user.users;
+export const selectCurrentUser = (state: { user: UserState }) => state.user.currentUser;
+export const selectUserById = (state: { user: UserState }, userId: number) => 
+  state.user.users.find(user => user.id === userId);
+export const selectUserStatus = (state: { user: UserState }) => state.user.status;
+export const selectUserError = (state: { user: UserState }) => state.user.error;
+
 export default userSlice.reducer;

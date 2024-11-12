@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FormEventHandler } from "react";
 import { FormControl } from "@mui/material";
 
 interface Props {
@@ -6,16 +6,18 @@ interface Props {
     width?: string | number;
     height?: string | number;
     padding?: string | number;
+    onSubmit?: FormEventHandler | undefined
 }
 const FormWrapper: React.FC<Props> = ({
     children: children,
     width: width,
     height: height,
     padding: padding,
+    onSubmit: onSubmit
 }) => {
     return(
         // Will need to add the onSubmit function
-        <form style={{
+        <form onSubmit={onSubmit} style={{
             width: width,
             height: height,
             padding: padding,
