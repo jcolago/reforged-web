@@ -14,6 +14,7 @@ const LoginForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log(email, password)
     try {
       await dispatch(login({ email, password })).unwrap();
       navigate('/dashboard');
@@ -39,7 +40,7 @@ const LoginForm: React.FC = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <ButtonContained title="Log In" />
+        <ButtonContained title="Log In" type='submit'/>
       </Box>
     </form>
   );
