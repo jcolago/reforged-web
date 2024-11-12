@@ -1,4 +1,4 @@
-import React, { MouseEventHandler } from "react";
+import React from "react";
 import { Button } from "@mui/material";
 
 interface Props {
@@ -6,24 +6,30 @@ interface Props {
     height?: string | number;
     padding?: string | number;
     title?: string;
-    onClick?: MouseEventHandler | undefined;
+    onClick?: () => void;  // Added onClick handler
+    children?: React.ReactNode;  // Added children prop
 }
 
 const ButtonContained: React.FC<Props> = ({
-    width: width,
-    height: height,
-    padding: padding,
-    title: title,
-    onClick: onClick
+    width,
+    height,
+    padding,
+    title,
+    onClick,
+    children
 }) => {
-    return(
-        <Button onClick={onClick} variant="contained" style={{
-            width: width,
-            height: height,
-            padding: padding,
-        }}>
-        {title}
-    </Button>
+    return (
+        <Button 
+            variant="contained" 
+            onClick={onClick}
+            style={{
+                width: width,
+                height: height,
+                padding: padding,
+            }}
+        >
+            {children || title}
+        </Button>
     );
 };
 

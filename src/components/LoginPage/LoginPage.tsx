@@ -5,8 +5,8 @@ import LoginForm from '../LoginForm/LoginForm';
 import ButtonContained from '../../global/components/ButtonContained';
 
 const LoginPage: React.FC = () => {
-  const navigate = useNavigate(); // Replace useHistory with useNavigate in v6
-
+  const navigate = useNavigate(); 
+  
   return (
     <Box 
       className='login-background'
