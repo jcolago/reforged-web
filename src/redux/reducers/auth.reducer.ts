@@ -65,12 +65,12 @@ export const login = createAsyncThunk(
 // Fetch current user thunk to match your sessions#me endpoint
 export const fetchCurrentUser = createAsyncThunk(
   'auth/fetchCurrentUser',
-  async (_, { rejectWithValue, getState }) => {
+  async (_, { rejectWithValue }) => {
     try {
+      console.log(localStorage.token)
       const response = await axios.get<{ user: User }>('/api/v1/me', {
         headers: {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          Authorization: `Bearer ${(getState() as any).auth.token}`
+          Authorization: `Bearer ${localStorage.token}`
         }
       });
       return response.data.user;

@@ -39,7 +39,11 @@ export const fetchUsers = createAsyncThunk(
   'user/fetchUsers',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get('/api/v1/users');
+      const response = await axios.get('/api/v1/users', {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`
+        }
+      })
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -54,7 +58,11 @@ export const fetchUser = createAsyncThunk(
   'user/fetchUser',
   async (id: number, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`/api/v1/users/${id}`);
+      const response = await axios.get(`/api/v1/users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`
+        }
+      });
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -70,7 +78,10 @@ export const createUser = createAsyncThunk(
   async (userData: CreateUserData, { rejectWithValue }) => {
     try {
       const response = await axios.post('/api/v1/users', {
-        user: userData // Wrap in user object as required by Rails strong parameters
+        user: userData, // Wrap in user object as required by Rails strong parameters
+        headers: {
+            Authorization: `Bearer ${localStorage.token}`
+        }
       });
       return response.data;
     } catch (error) {
@@ -88,7 +99,10 @@ export const updateUser = createAsyncThunk(
   async ({ id, userData }: { id: number; userData: UpdateUserData }, { rejectWithValue }) => {
     try {
       const response = await axios.patch(`/api/v1/users/${id}`, {
-        user: userData // Wrap in user object as required by Rails strong parameters
+        user: userData, // Wrap in user object as required by Rails strong parameters
+        headers: {
+            Authorization: `Bearer ${localStorage.token}`
+        }
       });
       return response.data;
     } catch (error) {
@@ -105,29 +119,15 @@ export const deleteUser = createAsyncThunk(
   'user/deleteUser',
   async (id: number, { rejectWithValue }) => {
     try {
-      await axios.delete(`/api/v1/users/${id}`);
+      await axios.delete(`/api/v1/users/${id}`,{  
+        headers: {
+        Authorization: `Bearer ${localStorage.token}`
+    }
+    });
       return id;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         return rejectWithValue(error.response?.data || 'Failed to delete user');
-      }
-      return rejectWithValue('An unexpected error occurred');
-    }
-  }
-);
-
-export const loginUser = createAsyncThunk(
-  'user/loginUser',
-  async (credentials: { email: string; password: string }, { rejectWithValue }) => {
-    try {
-      const response = await axios.post('/api/v1/users/login', credentials);
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 401) {
-          return rejectWithValue('Invalid email or password');
-        }
-        return rejectWithValue(error.response?.data?.error || 'Login failed');
       }
       return rejectWithValue('An unexpected error occurred');
     }
@@ -218,19 +218,6 @@ const userSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload as string;
       })
-      // Login User
-      .addCase(loginUser.pending, (state) => {
-        state.status = 'loading';
-        state.error = null;
-      })
-      .addCase(loginUser.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.currentUser = action.payload;
-      })
-      .addCase(loginUser.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload as string;
-      });
   },
 });
 
