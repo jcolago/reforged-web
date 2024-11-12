@@ -7,6 +7,9 @@ import { selectIsAuthenticated, selectAuthStatus, fetchCurrentUser } from './red
 // Import your components
 import LandingPage from './components/LandingPage/LandingPage';
 import RegistrationPage from './components/RegistrationPage/RegistrationPage';
+import Nav from './components/Nav/Nav';
+import Footer from './components/Footer/Footer';
+import UserDashboard from './components/UserDashboard/UserDashboard';
 
 // Import other components you need...
 
@@ -30,6 +33,7 @@ const App: React.FC = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const authStatus = useSelector(selectAuthStatus);
 
+
   useEffect(() => {
     if (isAuthenticated) {
       dispatch(fetchCurrentUser());
@@ -43,11 +47,12 @@ const App: React.FC = () => {
 
   return (
     <Router>
+      <Nav />
       <Routes>
         {/* Public routes */}
         <Route 
           path="/" 
-          element={!isAuthenticated ? <LandingPage /> : <Navigate to="/dashboard" replace />} 
+          element={!isAuthenticated  ? <LandingPage /> : <Navigate to="/dashboard" replace />} 
         />
         <Route 
           path="/login" 
@@ -63,7 +68,7 @@ const App: React.FC = () => {
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <div>Dashboard Component</div> {/* Replace with your actual Dashboard component */}
+              <UserDashboard />
             </ProtectedRoute>
           }
         />
@@ -90,6 +95,7 @@ const App: React.FC = () => {
         {/* 404 route */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <Footer />
     </Router>
   );
 };
