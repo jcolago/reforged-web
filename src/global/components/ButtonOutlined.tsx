@@ -6,22 +6,30 @@ interface Props {
     height?: string | number;
     padding?: string | number;
     title?: string;
+    onClick?: () => void;
+    children?: React.ReactNode;
 }
 
 const ButtonOutlined: React.FC<Props> = ({
-    width: width,
-    height: height,
-    padding: padding,
-    title: title
+    width,
+    height,
+    padding,
+    title,
+    onClick,
+    children
 }) => {
-    return(
-        <Button variant="outlined" style={{
-            width: width,
-            height: height,
-            padding: padding,
-        }}>
-        {title}
-    </Button>
+    return (
+        <Button 
+            variant="contained" 
+            onClick={onClick}
+            style={{
+                width: width,
+                height: height,
+                padding: padding,
+            }}
+        >
+            {children || title}
+        </Button>
     );
 };
 

@@ -6,7 +6,7 @@ import ButtonContained from '../../global/components/ButtonContained';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate(); 
-  
+
   return (
     <Box 
       className='login-background'
@@ -22,10 +22,10 @@ const LoginPage: React.FC = () => {
 
       <Box>
         <ButtonContained 
-          title="Register"
+          title="Login"
           width={120}
           padding={10}
-          onClick={() => navigate('/registration')}
+          onClick={() => navigate('/login')}
         />
       </Box>
     </Box>

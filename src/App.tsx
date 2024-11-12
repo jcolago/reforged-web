@@ -12,7 +12,7 @@ import {
   selectToken, 
   fetchCurrentUser,
   type User 
-} from './redux/reducers/user.reducer';
+} from './redux/reducers/auth.reducer';
 import { fetchGames } from './redux/reducers/game.reducer';
 import { fetchPlayers } from './redux/reducers/player.reducer';
 import { fetchMonsters } from './redux/reducers/monster.reducer';

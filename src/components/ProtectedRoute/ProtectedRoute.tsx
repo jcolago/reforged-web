@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { selectCurrentUser } from '../../redux/reducers/user.reducer';
+import { selectCurrentUser } from '../../redux/reducers/auth.reducer';
 
 const ProtectedRoute: React.FC = () => {
   const currentUser = useSelector(selectCurrentUser);

@@ -6,8 +6,11 @@ interface Props {
     height?: string | number;
     padding?: string | number;
     title?: string;
-    onClick?: () => void;  // Added onClick handler
-    children?: React.ReactNode;  // Added children prop
+    onClick?: () => void;
+    children?: React.ReactNode;
+    disabled?: boolean;
+    type?: "button" | "submit" | "reset";
+    className?: string;
 }
 
 const ButtonContained: React.FC<Props> = ({
@@ -16,12 +19,18 @@ const ButtonContained: React.FC<Props> = ({
     padding,
     title,
     onClick,
-    children
+    children,
+    disabled,
+    type = "button",
+    className
 }) => {
     return (
         <Button 
             variant="contained" 
             onClick={onClick}
+            type={type}
+            disabled={disabled}
+            className={className}
             style={{
                 width: width,
                 height: height,

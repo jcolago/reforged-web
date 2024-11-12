@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../../redux/reducers/user.reducer';
+import { login } from '../../redux/reducers/auth.reducer';
 import { AppDispatch } from '../../redux/store';
 import { Box, TextField } from '@mui/material';
 import ButtonContained from '../../global/components/ButtonContained';
