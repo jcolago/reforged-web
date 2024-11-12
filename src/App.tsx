@@ -3,7 +3,7 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  // Navigate
+  Navigate
 } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from './redux/store';
@@ -28,7 +28,7 @@ import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 // import UserPage from './pages/UserPage';
 // import InfoPage from './pages/InfoPage';
 // import LandingPage from './pages/LandingPage';
-// import LoginPage from './pages/LoginPage';
+import LoginPage from '../src/components/LoginPage/LoginPage';
 // import RegisterPage from './pages/RegisterPage';
 // import PlayerInfo from './pages/PlayerInfo';
 // import PlayerStatInfo from './pages/PlayerStatInfo';
@@ -100,18 +100,18 @@ const App: React.FC = () => {
       >
         {/* <Nav /> */}
         <Routes>
-          {/* Public routes
-          <Route path="/" element={
+          /* Public routes
+          {/* <Route path="/" element={
             currentUser?.id ? <Navigate to="/user" replace /> : <LandingPage />
-          } />
+          } /> */}
           
-          <Route path="/about" element={<AboutPage />} />
+          {/* <Route path="/about" element={<AboutPage />} /> */}
           
           <Route path="/login" element={
             currentUser?.id ? <Navigate to="/user" replace /> : <LoginPage />
           } />
           
-          <Route path="/registration" element={
+          {/* <Route path="/registration" element={
             currentUser?.id ? <Navigate to="/user" replace /> : <RegisterPage />
           } /> */}
 

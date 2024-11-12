@@ -1,5 +1,5 @@
 import { combineReducers } from "@reduxjs/toolkit";
-import userReducer from "./user.reducer";
+import authReducer from "./user.reducer";
 import playerReducer from "./player.reducer";
 import monsterReducer from "./monster.reducer";
 import conditionReducer from "./condition.reducer";
@@ -7,7 +7,7 @@ import playerConditionReducer from "./player_condition.reducer";
 import gameReducer from "./game.reducer";
 
 const rootReducer = combineReducers({
-  user: userReducer,
+  auth: authReducer,
   player: playerReducer,
   monster: monsterReducer,
   condition: conditionReducer,
