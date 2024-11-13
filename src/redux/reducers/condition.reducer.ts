@@ -1,91 +1,77 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import { conditionService } from '../../api/service';
 
 // Types
-interface Condition {
+export interface Condition {
   id: number;
   name: string;
 }
 
-interface PlayerCondition {
-  id: number;
-  player_id: number;
-  condition_id: number;
+export interface ValidationErrors {
+  name?: string[];
+  base?: string[];
+  [key: string]: string[] | undefined;
 }
 
-interface ConditionsState {
+export interface ConditionsState {
   conditions: Condition[];
-  playerConditions: PlayerCondition[];
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
-  error: string | null;
+  error: ValidationErrors | string | null;
 }
 
 const initialState: ConditionsState = {
   conditions: [],
-  playerConditions: [],
   status: 'idle',
   error: null,
 };
 
-// Async thunks for conditions
+// Async thunks
 export const fetchConditions = createAsyncThunk(
   'conditions/fetchConditions',
-  async () => {
-    const response = await axios.get('/api/v1/conditions', {
-        headers: {
-          Authorization: `Bearer ${localStorage.token}`
-        }
-      });
-    return response.data;
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await conditionService.getConditions();
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.errors || 'Failed to fetch conditions');
+    }
   }
 );
 
 export const createCondition = createAsyncThunk(
   'conditions/createCondition',
-  async (name: string) => {
-    const response = await axios.post('/api/v1/conditions', { headers: {
-        Authorization: `Bearer ${localStorage.token}`
-      },
-      condition: { name } });
-    return response.data;
+  async (conditionData: { name: string }, { rejectWithValue }) => {
+    try {
+      const response = await conditionService.createCondition(conditionData);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.errors || 'Failed to create condition');
+    }
+  }
+);
+
+export const updateCondition = createAsyncThunk(
+  'conditions/updateCondition',
+  async ({ id, conditionData }: { id: number, conditionData: Partial<Condition> }, { rejectWithValue }) => {
+    try {
+      const response = await conditionService.updateCondition(id, conditionData);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.errors || 'Failed to update condition');
+    }
   }
 );
 
 export const deleteCondition = createAsyncThunk(
   'conditions/deleteCondition',
-  async (id: number) => {
-    await axios.delete(`/api/v1/conditions/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.token}`
-        }
-      });
-    return id;
-  }
-);
-
-// Async thunks for player conditions
-export const addConditionToPlayer = createAsyncThunk(
-  'conditions/addConditionToPlayer',
-  async ({ player_id, condition_id }: { player_id: number; condition_id: number }) => {
-    const response = await axios.post('/api/v1/player_conditions', {
-        headers: {
-          Authorization: `Bearer ${localStorage.token}`
-      },
-      player_condition: { player_id, condition_id }
-    });
-    return response.data;
-  }
-);
-
-export const removeConditionFromPlayer = createAsyncThunk(
-  'conditions/removeConditionFromPlayer',
-  async (playerConditionId: number) => {
-    await axios.delete(`/api/v1/player_conditions/${playerConditionId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.token}`
-        }
-      });
-    return playerConditionId;
+  async (id: number, { rejectWithValue }) => {
+    try {
+      await conditionService.deleteCondition(id);
+      return id;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.errors || 'Failed to delete condition');
+    }
   }
 );
 
@@ -106,32 +92,53 @@ const conditionsSlice = createSlice({
       .addCase(fetchConditions.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.conditions = action.payload;
+        state.error = null;
       })
       .addCase(fetchConditions.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message || 'Failed to fetch conditions';
+        state.error = action.payload as ValidationErrors | string;
       })
       // Create Condition
+      .addCase(createCondition.pending, (state) => {
+        state.status = 'loading';
+      })
       .addCase(createCondition.fulfilled, (state, action) => {
+        state.status = 'succeeded';
         state.conditions.push(action.payload);
+        state.error = null;
+      })
+      .addCase(createCondition.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as ValidationErrors | string;
+      })
+      // Update Condition
+      .addCase(updateCondition.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(updateCondition.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        const index = state.conditions.findIndex(condition => condition.id === action.payload.id);
+        if (index !== -1) {
+          state.conditions[index] = action.payload;
+        }
+        state.error = null;
+      })
+      .addCase(updateCondition.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as ValidationErrors | string;
       })
       // Delete Condition
+      .addCase(deleteCondition.pending, (state) => {
+        state.status = 'loading';
+      })
       .addCase(deleteCondition.fulfilled, (state, action) => {
+        state.status = 'succeeded';
         state.conditions = state.conditions.filter(condition => condition.id !== action.payload);
-        // Also remove any player conditions that referenced this condition
-        state.playerConditions = state.playerConditions.filter(
-          pc => pc.condition_id !== action.payload
-        );
+        state.error = null;
       })
-      // Add Condition to Player
-      .addCase(addConditionToPlayer.fulfilled, (state, action) => {
-        state.playerConditions.push(action.payload);
-      })
-      // Remove Condition from Player
-      .addCase(removeConditionFromPlayer.fulfilled, (state, action) => {
-        state.playerConditions = state.playerConditions.filter(
-          pc => pc.id !== action.payload
-        );
+      .addCase(deleteCondition.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as ValidationErrors | string;
       });
   },
 });
@@ -142,17 +149,8 @@ export const { clearConditionErrors } = conditionsSlice.actions;
 export const selectAllConditions = (state: { conditions: ConditionsState }) => 
   state.conditions.conditions;
 
-export const selectPlayerConditions = (state: { conditions: ConditionsState }, playerId: number) =>
-  state.conditions.playerConditions
-    .filter(pc => pc.player_id === playerId)
-    .map(pc => {
-      const condition = state.conditions.conditions.find(c => c.id === pc.condition_id);
-      return {
-        id: pc.id,
-        condition_id: pc.condition_id,
-        condition_name: condition?.name
-      };
-    });
+export const selectConditionById = (state: { conditions: ConditionsState }, conditionId: number) =>
+  state.conditions.conditions.find(condition => condition.id === conditionId);
 
 export const selectConditionsStatus = (state: { conditions: ConditionsState }) => 
   state.conditions.status;

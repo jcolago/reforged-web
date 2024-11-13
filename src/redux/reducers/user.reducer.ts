@@ -1,27 +1,27 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { userService } from '../../api/service';
 
 // Types
-interface User {
+export interface User {
   id: number;
   email: string;
-  // Add other user fields but exclude password_digest as per your controller
 }
 
-interface UserState {
+export interface UserState {
   users: User[];
   currentUser: User | null;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null | Record<string, string[]>;
 }
 
-interface CreateUserData {
+export interface CreateUserData {
   email: string;
   password: string;
   password_confirmation: string;
 }
 
-interface UpdateUserData {
+export interface UpdateUserData {
   email?: string;
   password?: string;
   password_confirmation?: string;
@@ -39,17 +39,10 @@ export const fetchUsers = createAsyncThunk(
   'user/fetchUsers',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get('/api/v1/users', {
-        headers: {
-          Authorization: `Bearer ${localStorage.token}`
-        }
-      })
+      const response = await userService.getUsers();
       return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        return rejectWithValue(error.response?.data || 'Failed to fetch users');
-      }
-      return rejectWithValue('An unexpected error occurred');
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch users');
     }
   }
 );
@@ -58,17 +51,10 @@ export const fetchUser = createAsyncThunk(
   'user/fetchUser',
   async (id: number, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`/api/v1/users/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.token}`
-        }
-      });
+      const response = await userService.getUser(id);
       return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        return rejectWithValue(error.response?.data || 'Failed to fetch user');
-      }
-      return rejectWithValue('An unexpected error occurred');
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch user');
     }
   }
 );
@@ -77,19 +63,10 @@ export const createUser = createAsyncThunk(
   'user/createUser',
   async (userData: CreateUserData, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/api/v1/users', {
-        user: userData, // Wrap in user object as required by Rails strong parameters
-        headers: {
-            Authorization: `Bearer ${localStorage.token}`
-        }
-      });
+      const response = await userService.createUser(userData);
       return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 422) {
-        // Handle validation errors from Rails
-        return rejectWithValue(error.response.data);
-      }
-      return rejectWithValue('Registration failed');
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || 'Failed to create user');
     }
   }
 );
@@ -98,19 +75,10 @@ export const updateUser = createAsyncThunk(
   'user/updateUser',
   async ({ id, userData }: { id: number; userData: UpdateUserData }, { rejectWithValue }) => {
     try {
-      const response = await axios.patch(`/api/v1/users/${id}`, {
-        user: userData, // Wrap in user object as required by Rails strong parameters
-        headers: {
-            Authorization: `Bearer ${localStorage.token}`
-        }
-      });
+      const response = await userService.updateUser(id, userData);
       return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 422) {
-        // Handle validation errors from Rails
-        return rejectWithValue(error.response.data);
-      }
-      return rejectWithValue('Failed to update user');
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || 'Failed to update user');
     }
   }
 );
@@ -119,17 +87,10 @@ export const deleteUser = createAsyncThunk(
   'user/deleteUser',
   async (id: number, { rejectWithValue }) => {
     try {
-      await axios.delete(`/api/v1/users/${id}`,{  
-        headers: {
-        Authorization: `Bearer ${localStorage.token}`
-    }
-    });
+      await userService.deleteUser(id);
       return id;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        return rejectWithValue(error.response?.data || 'Failed to delete user');
-      }
-      return rejectWithValue('An unexpected error occurred');
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || 'Failed to delete user');
     }
   }
 );
@@ -174,11 +135,9 @@ const userSlice = createSlice({
       // Create User
       .addCase(createUser.pending, (state) => {
         state.status = 'loading';
-        state.error = null;
       })
       .addCase(createUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.currentUser = action.payload;
         state.users.push(action.payload);
       })
       .addCase(createUser.rejected, (state, action) => {
@@ -217,7 +176,7 @@ const userSlice = createSlice({
       .addCase(deleteUser.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
-      })
+      });
   },
 });
 

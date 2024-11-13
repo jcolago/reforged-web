@@ -1,78 +1,65 @@
-import axios, { AxiosInstance } from 'axios';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import apiClient from './client';
 
-// Types for your API responses
-interface LoginResponse {
-  token: string;
-}
-
-interface UserResponse {
-  user: {
-    id: number;
-    email: string;
-    // ... other user properties
-  }
-}
-
-// API client setup
-const api: AxiosInstance = axios.create({
-  baseURL: '/api/v1',
-  headers: {
-    'Content-Type': 'application/json'
-  }
-});
-
-// Request interceptor for adding auth token
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-// API service functions
+// Auth service
 export const authService = {
-  login: async (email: string, password: string) => {
-    const response = await api.post<LoginResponse>('/login', { email, password });
-    return response.data;
-  },
-
-  me: async () => {
-    const response = await api.get<UserResponse>('/me');
-    return response.data;
-  },
-
-  logout: async () => {
-    return api.delete('/logout');
-  }
+  login: (credentials: { email: string; password: string }) => 
+    apiClient.post('/login', credentials),
+  logout: () => apiClient.delete('/logout'),
+  getCurrentUser: () => apiClient.get('/me'),
 };
 
+// Users service
+export const userService = {
+  getUsers: () => apiClient.get('/users'),
+  getUser: (id: number) => apiClient.get(`/users/${id}`),
+  createUser: (userData: any) => apiClient.post('/users', { user: userData }),
+  updateUser: (id: number, userData: any) => apiClient.patch(`/users/${id}`, { user: userData }),
+  deleteUser: (id: number) => apiClient.delete(`/users/${id}`),
+};
+
+// Players service
 export const playerService = {
-  getAll: async () => {
-    const response = await api.get('/players');
-    return response.data;
-  },
-
-  updateHp: async (playerId: number, hp: number) => {
-    const response = await api.patch(`/players/${playerId}/update_hp`, { current_hp: hp });
-    return response.data;
-  }
+  getPlayers: () => apiClient.get('/players'),
+  getPlayer: (id: number) => apiClient.get(`/players/${id}`),
+  createPlayer: (playerData: any) => apiClient.post('/players', { player: playerData }),
+  updatePlayer: (id: number, playerData: any) => apiClient.patch(`/players/${id}`, { player: playerData }),
+  deletePlayer: (id: number) => apiClient.delete(`/players/${id}`),
+  updatePlayerHP: (id: number, hp: number) => apiClient.patch(`/players/${id}/update_hp`, { current_hp: hp }),
 };
 
+// Monsters service
 export const monsterService = {
-  getAll: async () => {
-    const response = await api.get('/monsters/monsters');
-    return response.data;
-  },
-
-  addMonster: async (monsterData: unknown) => {
-    const response = await api.post('/monsters/add_monster', monsterData);
-    return response.data;
-  },
-
-  removeMonster: async (monsterId: number) => {
-    return api.delete('/monsters/remove_monster', { data: { id: monsterId } });
-  }
+  getMonsters: () => apiClient.get('/monsters/monsters'),
+  getMonster: (id: number) => apiClient.get(`/monsters/${id}`),
+  addMonster: (monsterData: any) => apiClient.post('/monsters/add_monster', { monster: monsterData }),
+  removeMonster: (id: number) => apiClient.delete('/monsters/remove_monster', { data: { id } }),
+  updateMonster: (id: number, monsterData: any) => apiClient.patch(`/monsters/${id}`, { monster: monsterData }),
 };
 
-export default api;
+// Games service
+export const gameService = {
+  getGames: () => apiClient.get('/games'),
+  getGame: (id: number) => apiClient.get(`/games/${id}`),
+  createGame: (gameData: any) => apiClient.post('/games', { game: gameData }),
+  updateGame: (id: number, gameData: any) => apiClient.patch(`/games/${id}`, { game: gameData }),
+  deleteGame: (id: number) => apiClient.delete(`/games/${id}`),
+};
+
+// Conditions service
+export const conditionService = {
+  getConditions: () => apiClient.get('/conditions'),
+  getCondition: (id: number) => apiClient.get(`/conditions/${id}`),
+  createCondition: (conditionData: any) => apiClient.post('/conditions', { condition: conditionData }),
+  updateCondition: (id: number, conditionData: any) => apiClient.patch(`/conditions/${id}`, { condition: conditionData }),
+  deleteCondition: (id: number) => apiClient.delete(`/conditions/${id}`),
+};
+
+// Player Conditions service
+export const playerConditionService = {
+  getPlayerConditions: () => apiClient.get('/player_conditions'),
+  getPlayerCondition: (id: number) => apiClient.get(`/player_conditions/${id}`),
+  createPlayerCondition: (pcData: any) => apiClient.post('/player_conditions', { player_condition: pcData }),
+  updatePlayerCondition: (id: number, pcData: any) => apiClient.patch(`/player_conditions/${id}`, { player_condition: pcData }),
+  deletePlayerCondition: (id: number) => apiClient.delete(`/player_conditions/${id}`),
+};

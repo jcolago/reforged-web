@@ -51,7 +51,7 @@ const MonsterTableItem: React.FC<MonsterTableItemProps> = ({ monster }) => {
         <Typography>{monster.hit_points}</Typography>
       </TableCell>
       <TableCell style={{borderRight: "2px solid black"}}>
-        <Typography>{monster.game_name}</Typography>
+        <Typography>{monster.game_id}</Typography>
       </TableCell>
       <TableCell style={{textAlign: "center"}}>
         <ButtonContained

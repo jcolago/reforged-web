@@ -1,7 +1,7 @@
 html,
 body,
 #react-root {
-  background-image: url("/public/images/dice2.jpg");
+  background-image: url("/images/dice2.jpg");
   background-size: cover;
   background-attachment: fixed;
   height: 100%;

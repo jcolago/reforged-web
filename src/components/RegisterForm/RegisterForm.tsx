@@ -49,7 +49,7 @@ const RegisterForm: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    
+    console.log(formData)
     try {
       await dispatch(createUser(formData)).unwrap();
     } catch (err) {
