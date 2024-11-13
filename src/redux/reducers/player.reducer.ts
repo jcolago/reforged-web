@@ -2,10 +2,11 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
 // Type for a single player
-interface PlayerState {
+export interface PlayerState {
   id: number
   name: string;
   character: string;
+  class: string;
   image: string;
   level: number;
   current_hp: number;
@@ -36,7 +37,7 @@ interface PlayerState {
 }
 
 // State interface for the reducer
-interface PlayersState {
+export interface PlayersState {
   players: PlayerState[];
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
@@ -88,6 +89,21 @@ export const deletePlayer = createAsyncThunk(
   async (id: number) => {
     await axios.delete(`/api/v1/players/${id}`);
     return id;
+  }
+);
+
+export const togglePlayerDisplay = createAsyncThunk(
+  'player/togglePlayerDisplay',
+  async (id: number, { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(`/api/v1/players/${id}/toggle_display`);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        return rejectWithValue(error.response?.data || 'Failed to toggle player display');
+      }
+      return rejectWithValue('An unexpected error occurred');
+    }
   }
 );
 
