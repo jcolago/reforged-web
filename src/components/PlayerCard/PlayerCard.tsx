@@ -8,39 +8,36 @@ import {
   FormControl, 
   InputLabel,
   Select,
-  MenuItem,
-  SelectChangeEvent
+  SelectChangeEvent,
+  MenuItem
 } from '@mui/material';
 import { AppDispatch, RootState } from '../../redux/store';
 import { PlayerState } from '../../redux/reducers/player.reducer';
 import { 
   addPlayerCondition, 
-  updatePlayerHp,
-  Condition 
+  updatePlayerCondition 
 } from '../../redux/reducers/player_condition.reducer';
 import GlobalCard from '../../global/components/GlobalCard';
 import ButtonContained from '../../global/components/ButtonContained';
 import ConditionItem from '../ConditionItem/ConditionItem';
 
 interface PlayerCardProps {
-  player: PlayerState & {
-    length_condition: Array<{
-      id: number;
-      player_id: number;
-      condition_id: number;
-      condition_length: number;
-      condition?: {
-        id: number;
-        name: string;
-      };
-    }>;
-  };
+  player: PlayerState;
 }
 
 const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
   const dispatch = useDispatch<AppDispatch>();
+  
+  // Get conditions from the condition reducer
   const conditions = useSelector((state: RootState) => 
     state.condition.conditions
+  );
+  
+  // Get player conditions from player_condition reducer
+  const playerConditions = useSelector((state: RootState) => 
+    state.playerCondition.playerConditions.filter(
+      pc => pc.player_id === player.id
+    )
   );
 
   const [formValues, setFormValues] = useState({
@@ -57,6 +54,8 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
   }, [player]);
 
   const handleConditionAdd = () => {
+    if (!formValues.conditionId || !formValues.conditionLength) return;
+
     const conditionObj = {
       condition_length: Number(formValues.conditionLength),
       condition_id: Number(formValues.conditionId),
@@ -72,12 +71,10 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
   };
 
   const handleHpUpdate = () => {
-    const newHpObj = {
-      current_hp: Number(formValues.newHp),
-      player_id: player.id
-    };
-    
-    dispatch(updatePlayerHp(newHpObj));
+    dispatch(updatePlayerCondition({
+      id: player.id,
+      condition_length: Number(formValues.newHp)
+    }));
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -146,7 +143,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
       
       <hr />
 
-      {player.length_condition?.map(condition => (
+      {playerConditions.map(condition => (
         <ConditionItem 
           key={condition.id} 
           player={condition}
@@ -183,7 +180,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
             <MenuItem disabled value="">
               Please select a condition
             </MenuItem>
-            {conditions.map((condition: Condition) => 
+            {conditions.map(condition => 
               condition.name !== "None" && (
                 <MenuItem key={condition.id} value={condition.id}>
                   <Typography>{condition.name}</Typography>
@@ -195,8 +192,8 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
 
         <ButtonContained
           height="25px"
-            marginBottom="3px"
-            marginTop="2px"
+          marginBottom="3px"
+          marginTop="2px"
           onClick={handleConditionAdd}
         >
           Add Condition
