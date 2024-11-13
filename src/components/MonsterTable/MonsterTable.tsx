@@ -1,88 +1,77 @@
-// src/components/MonsterTableItem/MonsterTableItem.tsx
+// src/components/MonsterTable/MonsterTable.tsx
 
-import React from 'react';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
-import { TableRow, TableCell, Typography } from '@mui/material';
-import { AppDispatch } from '../../redux/store';
-import { MonsterState, removeMonster, toggleMonsterDisplay } from '../../redux/reducers/monster.reducer';
-import ButtonContained from '../../global/components/ButtonContained';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { 
+  Table, 
+  TableBody, 
+  TableHead, 
+  TableRow, 
+  TableContainer, 
+  TableCell, 
+  Paper, 
+  Typography 
+} from '@mui/material';
+import { AppDispatch, RootState } from '../../redux/store';
+import { fetchMonsters, MonsterState } from '../../redux/reducers/monster.reducer';
+import MonsterTableItem from '../MonsterTableItem/MonsterTableItem';
 
-interface MonsterTableItemProps {
-  monster: MonsterState;
-}
-
-const MonsterTableItem: React.FC<MonsterTableItemProps> = ({ monster }) => {
+const MonsterTable: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
+  const monsters = useSelector((state: RootState) => state.monster.monsters);
 
-  const handleDelete = () => {
-    if (!monster.id) return; // Early return if no id exists
-
-    Swal.fire({
-      title: "Are you sure?",
-      text: "This monster will be deleted.",
-      icon: 'warning',
-      showCancelButton: true
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire('Deleted!', 'The monster has been removed', 'success');
-        dispatch(removeMonster(monster.id as number));
-      }
-    });
-  };
+  useEffect(() => {
+    dispatch(fetchMonsters());
+  }, [dispatch]);
 
   return (
-    <TableRow style={{border: "2px solid black"}}>
-      <TableCell style={{borderRight: "2px solid black"}}>
-        <Typography>{monster.name}</Typography>
-      </TableCell>
-      <TableCell style={{borderRight: "2px solid black"}}>
-        <Typography>{monster.size}</Typography>
-      </TableCell>
-      <TableCell style={{borderRight: "2px solid black"}}>
-        <Typography>{monster.hit_points}</Typography>
-      </TableCell>
-      <TableCell style={{borderRight: "2px solid black"}}>
-        <Typography>{monster.game_id}</Typography>
-      </TableCell>
-      <TableCell style={{textAlign: "center"}}>
-        <ButtonContained 
-          width="55px"
-          height="25px"
-          onClick={() => monster.id && navigate(`/monsterdetails/${monster.id}`)}
-        >
-          Details
-        </ButtonContained>
-        <ButtonContained 
-          width="55px"
-          height="25px"
-          onClick={handleDelete}
-          backgroundColor = "red"
-          color = "white"
-        >
-          Delete
-        </ButtonContained>
-        {!monster.displayed ? (
-          <ButtonContained
-            width="55px"
-            height="25px"
-            onClick={() => monster.id && dispatch(toggleMonsterDisplay(monster.id))}
-          >
-            Display
-          </ButtonContained>
-        ) : (
-          <ButtonContained
-            height="25px"
-            onClick={() => navigate("/gameview")}
-          >
-            Game View
-          </ButtonContained>
-        )}
-      </TableCell>
-    </TableRow>
+    <Paper style={{ 
+      border: "2px double black", 
+      padding: "10px", 
+      margin: "auto", 
+      backgroundColor: "rgb(128, 150, 191, .5)", 
+      width: "90%"
+    }}>
+      <TableContainer style={{ 
+        maxWidth: "90%", 
+        margin: "auto", 
+        marginTop: "15px", 
+        marginBottom: "15px", 
+        padding: "10px", 
+        backgroundColor: "rgb(226, 232, 243, .7)"
+      }}>
+        <Table style={{ border: "2px solid black" }}>
+          <TableHead style={{ border: "2px solid black" }}>
+            <TableRow style={{ border: "2px solid black" }}>
+              <TableCell style={{ border: "2px solid black", textAlign: "center" }}>
+                <Typography style={{ fontWeight: "bold" }}>Monster Name</Typography>
+              </TableCell>
+              <TableCell style={{ border: "2px solid black", textAlign: "center" }}>
+                <Typography style={{ fontWeight: "bold" }}>Size</Typography>
+              </TableCell>
+              <TableCell style={{ border: "2px solid black", textAlign: "center" }}>
+                <Typography style={{ fontWeight: "bold" }}>Hit Points</Typography>
+              </TableCell>
+              <TableCell style={{ border: "2px solid black", textAlign: "center" }}>
+                <Typography style={{ fontWeight: "bold" }}>Game Name</Typography>
+              </TableCell>
+              <TableCell style={{ border: "2px solid black", textAlign: "center" }}>
+                <Typography style={{ fontWeight: "bold" }}>Actions</Typography>
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {monsters.map((monster: MonsterState) => (
+              <MonsterTableItem 
+                key={monster.id} 
+                monster={monster}
+              />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
   );
 };
 
-export default MonsterTableItem;
+export default MonsterTable;

@@ -25,27 +25,28 @@ export enum MonsterAlignment {
 
 // Type for a single monster
 export interface MonsterState {
-  id?: number;
-  name: string;
-  armor_class: number;
-  hit_points: number;
-  speed: number;
-  p_bonus: number;
-  resistances: string;
-  attacks: string; 
-  displayed: boolean;
-  size: MonsterSize;
-  alignment: MonsterAlignment;
-  game_id: number;
-}
+    id: number; // Remove the optional type
+    name: string;
+    size: MonsterSize;
+    alignment: MonsterAlignment;
+    armor_class: number;
+    hit_points: number;
+    speed: number;
+    resistances: string;
+    attacks: string;
+    p_bonus: number;
+    displayed: boolean;
+    game_id: number;
+    game_name?: string;
+  }
 
 // State interface for the reducer
 export interface MonstersState {
-  monsters: MonsterState[];
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
-  error: string | null;
-  currentMonster: MonsterState | null;
-}
+    monsters: MonsterState[];
+    currentMonster: MonsterState | null;
+    status: 'idle' | 'loading' | 'succeeded' | 'failed';
+    error: string | null;
+  }
 
 const initialState: MonstersState = {
   monsters: [],

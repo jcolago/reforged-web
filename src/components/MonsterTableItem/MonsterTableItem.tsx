@@ -6,20 +6,15 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { TableRow, TableCell, Typography } from '@mui/material';
 import { AppDispatch } from '../../redux/store';
-import { removeMonster, toggleMonsterDisplay } from '../../redux/reducers/monster.reducer';
+import { 
+  MonsterState,
+  removeMonster, 
+  toggleMonsterDisplay 
+} from '../../redux/reducers/monster.reducer';
 import ButtonContained from '../../global/components/ButtonContained';
 
-interface Monster {
-  id: number;
-  name: string;
-  size: string;
-  hit_points: number;
-  game_name?: string;
-  displayed: boolean;
-}
-
 interface MonsterTableItemProps {
-  monster: Monster;
+  monster: MonsterState;
 }
 
 const MonsterTableItem: React.FC<MonsterTableItemProps> = ({ monster }) => {
@@ -34,7 +29,11 @@ const MonsterTableItem: React.FC<MonsterTableItemProps> = ({ monster }) => {
       showCancelButton: true
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire('Deleted!', 'The monster has been removed', 'success');
+        Swal.fire(
+          'Deleted!',
+          'The monster has been removed',
+          'success'
+        );
         dispatch(removeMonster(monster.id));
       }
     });
@@ -65,9 +64,9 @@ const MonsterTableItem: React.FC<MonsterTableItemProps> = ({ monster }) => {
         <ButtonContained
           width="55px"
           height="25px"
+          backgroundColor="red" 
+          color= "white"
           onClick={handleDelete}
-          backgroundColor = "red" 
-          color =  "white"
         >
           Delete
         </ButtonContained>
