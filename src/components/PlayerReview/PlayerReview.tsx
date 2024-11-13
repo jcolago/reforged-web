@@ -46,7 +46,7 @@ interface PlayerStats {
     charisma_save: string;
 }
 
-const Review: React.FC = () => {
+const PlayerReview: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
@@ -158,4 +158,4 @@ const Review: React.FC = () => {
   );
 };
 
-export default Review;
+export default PlayerReview;
