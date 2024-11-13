@@ -31,7 +31,11 @@ const initialState: ConditionsState = {
 export const fetchConditions = createAsyncThunk(
   'conditions/fetchConditions',
   async () => {
-    const response = await axios.get('/api/v1/conditions');
+    const response = await axios.get('/api/v1/conditions', {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`
+        }
+      });
     return response.data;
   }
 );
@@ -39,7 +43,10 @@ export const fetchConditions = createAsyncThunk(
 export const createCondition = createAsyncThunk(
   'conditions/createCondition',
   async (name: string) => {
-    const response = await axios.post('/api/v1/conditions', { condition: { name } });
+    const response = await axios.post('/api/v1/conditions', { headers: {
+        Authorization: `Bearer ${localStorage.token}`
+      },
+      condition: { name } });
     return response.data;
   }
 );
@@ -47,7 +54,11 @@ export const createCondition = createAsyncThunk(
 export const deleteCondition = createAsyncThunk(
   'conditions/deleteCondition',
   async (id: number) => {
-    await axios.delete(`/api/v1/conditions/${id}`);
+    await axios.delete(`/api/v1/conditions/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`
+        }
+      });
     return id;
   }
 );
@@ -57,6 +68,9 @@ export const addConditionToPlayer = createAsyncThunk(
   'conditions/addConditionToPlayer',
   async ({ player_id, condition_id }: { player_id: number; condition_id: number }) => {
     const response = await axios.post('/api/v1/player_conditions', {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`
+      },
       player_condition: { player_id, condition_id }
     });
     return response.data;
@@ -66,7 +80,11 @@ export const addConditionToPlayer = createAsyncThunk(
 export const removeConditionFromPlayer = createAsyncThunk(
   'conditions/removeConditionFromPlayer',
   async (playerConditionId: number) => {
-    await axios.delete(`/api/v1/player_conditions/${playerConditionId}`);
+    await axios.delete(`/api/v1/player_conditions/${playerConditionId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`
+        }
+      });
     return playerConditionId;
   }
 );

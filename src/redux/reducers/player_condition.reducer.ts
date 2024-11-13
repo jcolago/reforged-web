@@ -70,7 +70,11 @@ import {
     void,
     { rejectValue: ValidationErrors }
   >('playerConditions/fetchPlayerConditions', async () => {
-    const response = await axios.get('/api/v1/player_conditions');
+    const response = await axios.get('/api/v1/player_conditions', {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`
+        }
+      });
     return response.data;
   });
   
@@ -79,7 +83,11 @@ import {
     number,
     { rejectValue: ValidationErrors }
   >('playerConditions/fetchPlayerConditionsForPlayer', async (playerId) => {
-    const response = await axios.get(`/api/v1/player_conditions?player_id=${playerId}`);
+    const response = await axios.get(`/api/v1/player_conditions?player_id=${playerId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`
+        }
+      });
     return response.data;
   });
   
@@ -90,6 +98,9 @@ import {
   >('playerConditions/createPlayerCondition', async (data, { rejectWithValue }) => {
     try {
       const response = await axios.post('/api/v1/player_conditions', {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`
+        },
         player_condition: data
       });
       return response.data;
@@ -109,6 +120,9 @@ import {
   >('playerConditions/updatePlayerCondition', async ({ id, condition_length }, { rejectWithValue }) => {
     try {
       const response = await axios.patch(`/api/v1/player_conditions/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`
+        },
         player_condition: { condition_length }
       });
       return response.data;
@@ -127,7 +141,11 @@ import {
     { rejectValue: ValidationErrors }
   >('playerConditions/deletePlayerCondition', async (id, { rejectWithValue }) => {
     try {
-      await axios.delete(`/api/v1/player_conditions/${id}`);
+      await axios.delete(`/api/v1/player_conditions/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`
+        }
+      });
       return id;
     } catch (err) {
       const error = err as AxiosError<{ errors: ValidationErrors }>;
@@ -141,7 +159,11 @@ import {
   export const addPlayerCondition = createAsyncThunk(
     'playerCondition/addCondition',
     async (conditionData: AddConditionPayload) => {
-      const response = await axios.post('/api/v1/player_conditions', conditionData);
+      const response = await axios.post('/api/v1/player_conditions', conditionData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`
+        }
+      });
       return response.data;
     }
   );
@@ -149,7 +171,11 @@ import {
   export const updatePlayerHp = createAsyncThunk(
     'playerCondition/updateHp',
     async (hpData: UpdateHpPayload) => {
-      const response = await axios.patch(`/api/v1/players/${hpData.player_id}/update_hp`, hpData);
+      const response = await axios.patch(`/api/v1/players/${hpData.player_id}/update_hp`, hpData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`
+        }
+      });
       return response.data;
     }
   );

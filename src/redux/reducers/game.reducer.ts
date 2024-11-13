@@ -47,7 +47,11 @@ export const fetchGames = createAsyncThunk<
   void,
   { rejectValue: ValidationErrors }
 >('games/fetchGames', async () => {
-  const response = await axios.get('/api/v1/games');
+  const response = await axios.get('/api/v1/games', {
+    headers: {
+      Authorization: `Bearer ${localStorage.token}`
+    }
+  });
   return response.data;
 });
 
@@ -56,7 +60,11 @@ export const fetchGame = createAsyncThunk<
   number,
   { rejectValue: ValidationErrors }
 >('games/fetchGame', async (id) => {
-  const response = await axios.get(`/api/v1/games/${id}`);
+  const response = await axios.get(`/api/v1/games/${id}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.token}`
+    }
+  });
   return response.data;
 });
 
@@ -66,7 +74,11 @@ export const createGame = createAsyncThunk<
   { rejectValue: ValidationErrors }
 >('games/createGame', async (gameData, { rejectWithValue }) => {
   try {
-    const response = await axios.post('/api/v1/games', { game: gameData });
+    const response = await axios.post('/api/v1/games', { 
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`
+        },
+        game: gameData });
     return response.data;
   } catch (err) {
     const error = err as AxiosError<{ errors: ValidationErrors }>;
@@ -83,7 +95,11 @@ export const updateGame = createAsyncThunk<
   { rejectValue: ValidationErrors }
 >('games/updateGame', async ({ id, gameData }, { rejectWithValue }) => {
   try {
-    const response = await axios.patch(`/api/v1/games/${id}`, { game: gameData });
+    const response = await axios.patch(`/api/v1/games/${id}`, { 
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`
+        },
+        game: gameData });
     return response.data;
   } catch (err) {
     const error = err as AxiosError<{ errors: ValidationErrors }>;
@@ -100,7 +116,11 @@ export const deleteGame = createAsyncThunk<
   { rejectValue: ValidationErrors }
 >('games/deleteGame', async (id, { rejectWithValue }) => {
   try {
-    await axios.delete(`/api/v1/games/${id}`);
+    await axios.delete(`/api/v1/games/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`
+        }
+      });
     return id;
   } catch (err) {
     const error = err as AxiosError<{ errors: ValidationErrors }>;

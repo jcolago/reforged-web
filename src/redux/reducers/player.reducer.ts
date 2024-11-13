@@ -138,7 +138,11 @@ const convertPlayerDataToNumbers = (
 export const fetchPlayers = createAsyncThunk(
   'players/fetchPlayers',
   async () => {
-    const response = await axios.get('/api/v1/players');
+    const response = await axios.get('/api/v1/players', {
+      headers: {
+        Authorization: `Bearer ${localStorage.token}`
+      }
+    });
     return response.data;
   }
 );
@@ -147,7 +151,11 @@ export const addPlayer = createAsyncThunk(
   'players/addPlayer',
   async (playerData: PlayerInfoFormValues & PlayerStatsFormValues) => {
     const convertedData = convertPlayerDataToNumbers(playerData);
-    const response = await axios.post('/api/v1/players', convertedData);
+    const response = await axios.post('/api/v1/players', convertedData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.token}`
+      }
+    });
     return response.data;
   }
 );
@@ -155,7 +163,11 @@ export const addPlayer = createAsyncThunk(
 export const togglePlayerDisplay = createAsyncThunk(
   'players/toggleDisplay',
   async (id: number) => {
-    const response = await axios.patch(`/api/v1/players/${id}/toggle_display`);
+    const response = await axios.patch(`/api/v1/players/${id}/toggle_display`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.token}`
+      }
+    });
     return response.data;
   }
 );
@@ -163,7 +175,11 @@ export const togglePlayerDisplay = createAsyncThunk(
 export const deletePlayer = createAsyncThunk(
   'players/deletePlayer',
   async (id: number) => {
-    await axios.delete(`/api/v1/players/${id}`);
+    await axios.delete(`/api/v1/players/${id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.token}`
+      }
+    });
     return id;
   }
 );
@@ -171,7 +187,11 @@ export const deletePlayer = createAsyncThunk(
 export const fetchPlayerDetails = createAsyncThunk(
   'players/fetchPlayerDetails',
   async (id: number) => {
-    const response = await axios.get(`/api/v1/players/${id}`);
+    const response = await axios.get(`/api/v1/players/${id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.token}`
+      }
+    });
     return response.data;
   }
 );
@@ -180,7 +200,11 @@ export const updatePlayer = createAsyncThunk(
   'players/updatePlayer',
   async ({ id, ...playerData }: PlayerState, { rejectWithValue }) => {
     try {
-      const response = await axios.patch(`/api/v1/players/${id}`, playerData);
+      const response = await axios.patch(`/api/v1/players/${id}`, playerData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`
+        }
+      });
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {

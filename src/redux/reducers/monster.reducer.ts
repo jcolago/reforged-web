@@ -58,7 +58,11 @@ const initialState: MonstersState = {
 export const fetchMonsters = createAsyncThunk(
   'monsters/fetchMonsters',
   async () => {
-    const response = await axios.get('/api/v1/monsters/monsters');
+    const response = await axios.get('/api/v1/monsters/monsters', {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`
+        }
+      });
     return response.data;
   }
 );
@@ -66,7 +70,11 @@ export const fetchMonsters = createAsyncThunk(
 export const addMonster = createAsyncThunk(
   'monsters/addMonster',
   async (monsterData: Omit<MonsterState, 'id'>) => {
-    const response = await axios.post('/api/v1/monsters/add_monster', { monster: monsterData });
+    const response = await axios.post('/api/v1/monsters/add_monster', {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`
+        },
+        monster: monsterData });
     return response.data;
   }
 );
@@ -74,7 +82,11 @@ export const addMonster = createAsyncThunk(
 export const updateMonster = createAsyncThunk(
   'monsters/updateMonster',
   async ({ id, monsterData }: { id: number; monsterData: Partial<MonsterState> }) => {
-    const response = await axios.patch(`/api/v1/monsters/${id}`, { monster: monsterData });
+    const response = await axios.patch(`/api/v1/monsters/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`
+        },
+        monster: monsterData });
     return response.data;
   }
 );
@@ -82,7 +94,11 @@ export const updateMonster = createAsyncThunk(
 export const removeMonster = createAsyncThunk(
   'monsters/removeMonster',
   async (id: number) => {
-    await axios.delete(`/api/v1/monsters/remove_monster`, { data: { id } });
+    await axios.delete(`/api/v1/monsters/remove_monster`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`
+        },
+        data: { id } });
     return id;
   }
 );
