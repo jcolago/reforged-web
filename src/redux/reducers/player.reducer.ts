@@ -76,17 +76,14 @@ export interface PlayerStatsFormValues {
   charisma_save: string;
 }
 
-export interface BackpackItem {
-  item_id: number;
-  quantity: number;
-}
 
 // State interface for the reducer
-interface PlayersState {
+export interface PlayersState {
   players: PlayerState[];
   playerInfo: PlayerInfoFormValues | null;
   playerStats: PlayerStatsFormValues | null;
   currentPlayer: PlayerState | null;
+  details: PlayerState[] | null; // Add this line
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 }
@@ -97,7 +94,8 @@ const initialState: PlayersState = {
   playerStats: null,
   currentPlayer: null,
   status: 'idle',
-  error: null
+  error: null,
+  details: null
 };
 
 const convertPlayerDataToNumbers = (
@@ -170,6 +168,15 @@ export const deletePlayer = createAsyncThunk(
   }
 );
 
+export const fetchPlayerDetails = createAsyncThunk(
+  'players/fetchPlayerDetails',
+  async (id: number) => {
+    const response = await axios.get(`/api/v1/players/${id}`);
+    return response.data;
+  }
+);
+
+
 const playerSlice = createSlice({
   name: 'player',
   initialState,
@@ -222,6 +229,17 @@ const playerSlice = createSlice({
         if (state.currentPlayer?.id === action.payload) {
           state.currentPlayer = null;
         }
+      })
+      .addCase(fetchPlayerDetails.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchPlayerDetails.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.details = [action.payload];
+      })
+      .addCase(fetchPlayerDetails.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message || 'Failed to fetch player details';
       });
   },
 });
