@@ -176,6 +176,21 @@ export const fetchPlayerDetails = createAsyncThunk(
   }
 );
 
+export const updatePlayer = createAsyncThunk(
+  'players/updatePlayer',
+  async ({ id, ...playerData }: PlayerState, { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(`/api/v1/players/${id}`, playerData);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        return rejectWithValue(error.response?.data || 'Failed to update player');
+      }
+      return rejectWithValue('An unexpected error occurred');
+    }
+  }
+);
+
 
 const playerSlice = createSlice({
   name: 'player',
@@ -240,6 +255,24 @@ const playerSlice = createSlice({
       .addCase(fetchPlayerDetails.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message || 'Failed to fetch player details';
+      })
+      .addCase(updatePlayer.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(updatePlayer.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        const index = state.players.findIndex(player => player.id === action.payload.id);
+        if (index !== -1) {
+          state.players[index] = action.payload;
+        }
+        // Also update details if it exists
+        if (state.details && state.details.length > 0) {
+          state.details[0] = action.payload;
+        }
+      })
+      .addCase(updatePlayer.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
       });
   },
 });
