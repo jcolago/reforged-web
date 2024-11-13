@@ -17,7 +17,7 @@ import {
     };
   }
   
-  interface PlayerConditionCreate {
+  export interface PlayerConditionCreate {
     player_id: number;
     condition_id: number;
     condition_length: number;
@@ -27,8 +27,24 @@ import {
     id: number;
     condition_length?: number;
   }
+
+  export interface Condition {
+    id: number;
+    name: string;
+  }
   
-  interface ValidationErrors {
+  export interface UpdateHpPayload {
+    current_hp: number;
+    player_id: number;
+  }
+  
+  export interface AddConditionPayload {
+    condition_length: number;
+    condition_id: number;
+    player_id: number;
+  }
+  
+  export interface ValidationErrors {
     base?: string[];
     player_id?: string[];
     condition_id?: string[];
@@ -36,7 +52,7 @@ import {
     [key: string]: string[] | undefined;
   }
   
-  interface PlayerConditionsState {
+  export interface PlayerConditionsState {
     playerConditions: PlayerCondition[];
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: ValidationErrors | string | null;
@@ -121,6 +137,22 @@ import {
       return rejectWithValue({ base: ['An unexpected error occurred'] });
     }
   });
+
+  export const addPlayerCondition = createAsyncThunk(
+    'playerCondition/addCondition',
+    async (conditionData: AddConditionPayload) => {
+      const response = await axios.post('/api/v1/player_conditions', conditionData);
+      return response.data;
+    }
+  );
+  
+  export const updatePlayerHp = createAsyncThunk(
+    'playerCondition/updateHp',
+    async (hpData: UpdateHpPayload) => {
+      const response = await axios.patch(`/api/v1/players/${hpData.player_id}/update_hp`, hpData);
+      return response.data;
+    }
+  );
   
   const playerConditionsSlice = createSlice({
     name: 'playerConditions',
@@ -186,8 +218,32 @@ import {
         .addCase(deletePlayerCondition.rejected, (state, action) => {
           state.status = 'failed';
           state.error = action.payload || { base: ['Failed to delete player condition'] };
-        });
+        })
+        .addCase(addPlayerCondition.pending, (state) => {
+            state.status = 'loading';
+          })
+          .addCase(addPlayerCondition.fulfilled, (state, action) => {
+            state.status = 'succeeded';
+            state.playerConditions.push(action.payload);
+          })
+          .addCase(addPlayerCondition.rejected, (state, action) => {
+            state.status = 'failed';
+            state.error = action.payload as ValidationErrors;
+          })
+          // Update HP
+          .addCase(updatePlayerHp.pending, (state) => {
+            state.status = 'loading';
+          })
+          .addCase(updatePlayerHp.fulfilled, (state) => {
+            state.status = 'succeeded';
+            // Handle HP update response if needed
+          })
+          .addCase(updatePlayerHp.rejected, (state, action) => {
+            state.status = 'failed';
+            state.error = action.payload as ValidationErrors;
+          });
     },
+    
   });
   
   export const { 
