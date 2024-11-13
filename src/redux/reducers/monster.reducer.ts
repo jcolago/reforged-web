@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
 // Enum types matching Rails enums
-enum MonsterSize {
+export enum MonsterSize {
   Tiny = "tiny",
   Small = "small",
   Medium = "medium",
@@ -11,7 +11,7 @@ enum MonsterSize {
   Gargantuan = "gargantuan"
 }
 
-enum MonsterAlignment {
+export enum MonsterAlignment {
   LawfulGood = "lawful_good",
   NeutralGood = "neutral_good",
   ChaoticGood = "chaotic_good",
@@ -24,15 +24,15 @@ enum MonsterAlignment {
 }
 
 // Type for a single monster
-interface MonsterState {
+export interface MonsterState {
   id?: number;
   name: string;
   armor_class: number;
   hit_points: number;
   speed: number;
   p_bonus: number;
-  resistances: string[];
-  attacks: string[]; // You might want to create a specific type for attacks
+  resistances: string;
+  attacks: string; 
   displayed: boolean;
   size: MonsterSize;
   alignment: MonsterAlignment;
@@ -40,7 +40,7 @@ interface MonsterState {
 }
 
 // State interface for the reducer
-interface MonstersState {
+export interface MonstersState {
   monsters: MonsterState[];
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
