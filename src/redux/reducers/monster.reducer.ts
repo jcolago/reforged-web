@@ -24,7 +24,7 @@ export enum MonsterAlignment {
 }
 
 // Type for a single monster
-interface MonsterState {
+export interface MonsterState {
   id?: number;
   name: string;
   armor_class: number;
@@ -40,7 +40,7 @@ interface MonsterState {
 }
 
 // State interface for the reducer
-interface MonstersState {
+export interface MonstersState {
   monsters: MonsterState[];
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
