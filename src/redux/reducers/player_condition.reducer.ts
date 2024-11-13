@@ -6,7 +6,7 @@ import {
   import axios, { AxiosError } from "axios";
   
   // Types
-  interface PlayerCondition {
+  export interface PlayerCondition {
     id: number;
     player_id: number;
     condition_id: number;
@@ -23,7 +23,7 @@ import {
     condition_length: number;
   }
   
-  interface PlayerConditionUpdate {
+  export interface PlayerConditionUpdate {
     id: number;
     condition_length?: number;
   }
