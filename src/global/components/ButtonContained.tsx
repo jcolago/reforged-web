@@ -5,6 +5,7 @@ interface Props {
     width?: string | number;
     height?: string | number;
     padding?: string | number;
+    margin?: string | number;
     marginTop?: string | number;
     marginLeft?: string | number;
     color?: string;
@@ -21,6 +22,7 @@ const ButtonContained: React.FC<Props> = ({
     width,
     height,
     padding,
+    margin,
     marginLeft,
     marginTop,
     color,
@@ -43,6 +45,7 @@ const ButtonContained: React.FC<Props> = ({
                 width: width,
                 height: height,
                 padding: padding,
+                margin: margin,
                 marginTop: marginTop,
                 marginLeft: marginLeft,
                 color: color,
