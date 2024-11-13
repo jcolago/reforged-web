@@ -5,6 +5,8 @@ interface Props {
     width?: string | number;
     height?: string | number;
     padding?: string | number;
+    marginTop?: string | number;
+    marginLeft?: string |number;
     title?: string;
     onClick?: () => void;
     children?: React.ReactNode;
@@ -17,6 +19,8 @@ const ButtonContained: React.FC<Props> = ({
     width,
     height,
     padding,
+    marginLeft,
+    marginTop,
     title,
     onClick,
     children,
@@ -35,6 +39,8 @@ const ButtonContained: React.FC<Props> = ({
                 width: width,
                 height: height,
                 padding: padding,
+                marginTop: marginTop,
+                marginLeft: marginLeft
             }}
         >
             {children || title}
