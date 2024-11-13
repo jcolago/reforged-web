@@ -8,6 +8,7 @@ interface Props {
     margin?: string | number;
     marginTop?: string | number;
     marginLeft?: string | number;
+    marginBottom?: string | number;
     color?: string;
     backgroundColor?: string;
     title?: string;
@@ -25,6 +26,7 @@ const ButtonContained: React.FC<Props> = ({
     margin,
     marginLeft,
     marginTop,
+    marginBottom,
     color,
     backgroundColor,
     title,
@@ -48,6 +50,7 @@ const ButtonContained: React.FC<Props> = ({
                 margin: margin,
                 marginTop: marginTop,
                 marginLeft: marginLeft,
+                marginBottom: marginBottom,
                 color: color,
                 backgroundColor: backgroundColor
             }}
