@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Box,
@@ -13,32 +13,41 @@ import {
   Grid,
 } from '@mui/material';
 import { AppDispatch, RootState } from '../../redux/store';
+import { PlayerState, updatePlayer } from '../../redux/reducers/player.reducer';
 import {
-  PlayerState,
-  updatePlayerHP,
-  togglePlayerDisplay,
-} from '../../redux/reducers/player.reducer';
-import { createPlayerCondition } from '../../redux/reducers/player_condition.reducer';
+  createPlayerCondition,
+  fetchPlayerConditions,
+} from '../../redux/reducers/player_condition.reducer';
+import { fetchConditions } from '../../redux/reducers/condition.reducer';
 import ButtonContained from '../../global/components/ButtonContained';
 import ConditionItem from '../ConditionItem/ConditionItem';
+import Swal from 'sweetalert2';
 
-interface PlayerCardProps {
-  player: PlayerState;
-}
-
-const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
+const PlayerCard: React.FC<{ player: PlayerState }> = ({ player }) => {
   const dispatch = useDispatch<AppDispatch>();
-
   const conditions = useSelector(
     (state: RootState) => state.condition.conditions
   );
-  console.log(conditions);
+  //   const playerConditions = useSelector((state: RootState) =>
+  //     state.playerCondition.playerConditions.filter(
+  //       (pc) => pc.player_id === player.id
+  //     )
+  //   );
 
-  const playerConditions = useSelector((state: RootState) =>
-    state.playerCondition.playerConditions.filter(
-      (pc) => pc.player_id === player.id
-    )
+  const playerConditionsWithNames = useSelector((state: RootState) =>
+    state.playerCondition.playerConditions
+      .filter((pc) => pc.player_id === player.id)
+      .map((pc) => ({
+        ...pc,
+        condition: state.condition.conditions.find(
+          (c) => c.id === pc.condition_id
+        ),
+      }))
   );
+
+  useEffect(() => {
+    console.log('Player Conditions:', playerConditionsWithNames);
+  }, [playerConditionsWithNames]);
 
   const [formValues, setFormValues] = useState({
     conditionLength: '',
@@ -46,16 +55,41 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
     newHp: player.current_hp.toString(),
   });
 
+  useEffect(() => {
+    dispatch(fetchPlayerConditions());
+    dispatch(fetchConditions());
+  }, [dispatch]);
+
+  useEffect(() => {
+    setFormValues((prev) => ({
+      ...prev,
+      newHp: player.current_hp.toString(),
+    }));
+  }, [player.current_hp]);
+
   const handleHpUpdate = async () => {
     try {
       await dispatch(
-        updatePlayerHP({
+        updatePlayer({
           id: player.id,
-          current_hp: parseInt(formValues.newHp),
+          playerData: { current_hp: parseInt(formValues.newHp) },
         })
       ).unwrap();
-    } catch (error) {
-      console.error('Failed to update HP:', error);
+
+      Swal.fire({
+        icon: 'success',
+        title: 'HP Updated',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    } catch {
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed to update HP',
+        text: 'Please try again',
+      });
     }
   };
 
@@ -76,21 +110,38 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
         conditionId: '',
         conditionLength: '',
       }));
-    } catch (error) {
-      console.error('Failed to add condition:', error);
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Condition Added',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    } catch {
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed to add condition',
+        text: 'Please try again',
+      });
     }
   };
 
   const handleRemove = async () => {
     try {
       await dispatch(
-        togglePlayerDisplay({
+        updatePlayer({
           id: player.id,
-          displayed: false,
+          playerData: { displayed: false },
         })
       ).unwrap();
-    } catch (error) {
-      console.error('Failed to remove from view:', error);
+    } catch {
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed to remove from view',
+        text: 'Please try again',
+      });
     }
   };
 
@@ -182,15 +233,23 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
         <Divider sx={{ my: 2 }} />
 
         {/* Conditions Section */}
-        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-          Conditions
-        </Typography>
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+            Active Conditions
+          </Typography>
 
-        <Stack spacing={1} sx={{ mb: 2 }}>
-          {playerConditions.map((condition) => (
-            <ConditionItem key={condition.id} player={condition} />
-          ))}
-        </Stack>
+          <Stack spacing={1} sx={{ mb: 2 }}>
+            {playerConditionsWithNames.length > 0 ? (
+              playerConditionsWithNames.map((condition) => (
+                <ConditionItem key={condition.id} condition={condition} />
+              ))
+            ) : (
+              <Typography color="text.secondary" variant="body2">
+                No active conditions
+              </Typography>
+            )}
+          </Stack>
+        </Box>
 
         {/* Add Condition */}
         <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>

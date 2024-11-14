@@ -1,21 +1,26 @@
-// src/components/ConditionItem/ConditionItem.tsx
-
 import React from 'react';
-import ConditionItemSingle from '../ConditionItemSingle/ConditionItemSingle';
+import { Box, Typography } from '@mui/material';
 import { PlayerCondition } from '../../redux/reducers/player_condition.reducer';
 
 interface ConditionItemProps {
-  player: PlayerCondition;
+  condition: PlayerCondition;
 }
 
-const ConditionItem: React.FC<ConditionItemProps> = ({ player }) => {
+const ConditionItem: React.FC<ConditionItemProps> = ({ condition }) => {
   return (
-    <div>
-      <ConditionItemSingle 
-        key={player.id} 
-        condition={player}
-      />
-    </div>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1,
+        p: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.03)',
+        borderRadius: 1,
+      }}
+    >
+      <Typography flex={1}>{condition.condition?.name}</Typography>
+      <Typography>Duration: {condition.condition_length}</Typography>
+    </Box>
   );
 };
 

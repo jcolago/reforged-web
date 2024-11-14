@@ -3,16 +3,17 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { playerConditionService } from '../../api/service';
 
 // Types
+
 export interface PlayerCondition {
-  id: number;
-  player_id: number;
-  condition_id: number;
-  condition_length: number;
-  condition?: {
     id: number;
-    name: string;
-  };
-}
+    player_id: number;
+    condition_id: number;
+    condition_length: number;
+    condition?: {
+      id: number;
+      name: string;
+    };
+  }
 
 export interface PlayerConditionCreate {
   player_id: number;
@@ -42,16 +43,16 @@ const initialState: PlayerConditionsState = {
 
 // Async thunks
 export const fetchPlayerConditions = createAsyncThunk(
-  'playerConditions/fetchPlayerConditions',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await playerConditionService.getPlayerConditions();
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.errors || 'Failed to fetch player conditions');
+    'playerConditions/fetchPlayerConditions',
+    async (_, { rejectWithValue }) => {
+      try {
+        const response = await playerConditionService.getPlayerConditions();
+        return response.data;
+      } catch (error: any) {
+        return rejectWithValue(error.response?.data || 'Failed to fetch conditions');
+      }
     }
-  }
-);
+  );
 
 export const createPlayerCondition = createAsyncThunk(
   'playerConditions/createPlayerCondition',
@@ -112,7 +113,6 @@ const playerConditionsSlice = createSlice({
       .addCase(fetchPlayerConditions.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.playerConditions = action.payload;
-        state.error = null;
       })
       .addCase(fetchPlayerConditions.rejected, (state, action) => {
         state.status = 'failed';
