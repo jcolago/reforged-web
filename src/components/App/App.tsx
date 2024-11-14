@@ -2,12 +2,18 @@
 
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+} from 'react-router-dom';
 import { AppDispatch } from '../../redux/store';
-import { 
-  selectIsAuthenticated, 
-  selectAuthStatus, 
-  fetchCurrentUser 
+import {
+  selectIsAuthenticated,
+  selectAuthStatus,
+  fetchCurrentUser,
 } from '../../redux/reducers/auth.reducer';
 import { fetchPlayers } from '../../redux/reducers/player.reducer';
 import { fetchMonsters } from '../../redux/reducers/monster.reducer';
@@ -16,7 +22,6 @@ import './App.css';
 
 // Import components
 import LandingPage from '../LandingPage/LandingPage';
-import RegistrationPage from '../RegistrationPage/RegistrationPage';
 import Nav from '../Nav/Nav';
 import Footer from '../Footer/Footer';
 import UserDashboard from '../UserDashboard/UserDashboard';
@@ -36,7 +41,7 @@ import GameView from '../GameView/GameView';
 const ProtectedRoute: React.FC = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const authStatus = useSelector(selectAuthStatus);
-  
+
   if (authStatus === 'loading') {
     return <div>Loading...</div>;
   }
@@ -70,17 +75,25 @@ const App: React.FC = () => {
       <Nav />
       <Routes>
         {/* Public routes */}
-        <Route 
-          path="/" 
-          element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LandingPage />} 
+        <Route
+          path="/"
+          element={
+            isAuthenticated ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <LandingPage />
+            )
+          }
         />
-        <Route 
-          path="/login" 
-          element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LandingPage />} 
-        />
-        <Route 
-          path="/register" 
-          element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <RegistrationPage />} 
+        <Route
+          path="/login"
+          element={
+            isAuthenticated ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <LandingPage />
+            )
+          }
         />
 
         {/* Protected routes */}

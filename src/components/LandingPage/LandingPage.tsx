@@ -1,18 +1,10 @@
+// LandingPage.tsx
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import './LandingPage.css';
 import { Card, CardContent, Typography, Container } from '@mui/material';
-import ButtonContained from '../../global/components/ButtonContained';
-import LoginForm from '../LoginForm/LoginForm';
-
+import AuthForm from '../AuthFrom/AuthForm';
 
 const LandingPage: React.FC = () => {
-  const navigate = useNavigate();
-
-  const onClick = () => {
-    navigate('/register');
-  };
-
   return (
     <div className="container">
       <div className="grid">
@@ -27,7 +19,9 @@ const LandingPage: React.FC = () => {
                   Welcome to the D&D Dungeon Master Companion App!
                 </Typography>
                 <Typography variant="h3" className="text-xl mb-4">
-                  This app was designed to help keep track of player characters for your specific games as well as keep a list of entered monsters for use.
+                  This app was designed to help keep track of player characters
+                  for your specific games as well as keep a list of entered
+                  monsters for use.
                 </Typography>
                 <Typography variant="h3" className="text-xl">
                   Register now or log in if you already have an account.
@@ -37,24 +31,7 @@ const LandingPage: React.FC = () => {
           </Container>
         </div>
         <div className="grid-col grid-col_4">
-        <LoginForm />
-
-          <div className="text-center">
-            <Typography 
-              variant="h3" 
-              className="text-white text-xl mb-4 drop-shadow-lg"
-              style={{ textShadow: '2px 2px 4px black' }}
-            >
-              Create an account
-            </Typography>
-            <ButtonContained 
-              title="Register"
-              width={120}
-              padding={10}
-              onClick={onClick}
-            />
-            
-          </div>
+          <AuthForm />
         </div>
       </div>
     </div>

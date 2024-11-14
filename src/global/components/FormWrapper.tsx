@@ -1,5 +1,4 @@
 import React, { FormEventHandler } from "react";
-import { FormControl } from "@mui/material";
 
 interface Props {
     children: React.ReactNode;
@@ -22,9 +21,9 @@ const FormWrapper: React.FC<Props> = ({
             height: height,
             padding: padding,
         }}>
-            <FormControl>
+            
                 {children}
-            </FormControl>
+            
 
         </form>
     )
