@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { TableRow, TableCell, Typography } from '@mui/material';
 import { AppDispatch } from '../../redux/store';
-import { 
-  PlayerState, 
+import {
+  PlayerState,
   deletePlayer,
-  togglePlayerDisplay 
+  togglePlayerDisplay,
 } from '../../redux/reducers/player.reducer';
 import ButtonContained from '../../global/components/ButtonContained';
 
@@ -21,17 +21,13 @@ const PlayerTableItem: React.FC<PlayerTableItemProps> = ({ player }) => {
 
   const handleDelete = () => {
     Swal.fire({
-      title: "Are you sure?",
-      text: "This character will be deleted.",
+      title: 'Are you sure?',
+      text: 'This character will be deleted.',
       icon: 'warning',
-      showCancelButton: true
+      showCancelButton: true,
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire(
-          'Deleted!',
-          'The character has been removed',
-          'success'
-        );
+        Swal.fire('Deleted!', 'The character has been removed', 'success');
         dispatch(deletePlayer(player.id));
       }
     });
@@ -41,35 +37,35 @@ const PlayerTableItem: React.FC<PlayerTableItemProps> = ({ player }) => {
     try {
       await dispatch(togglePlayerDisplay(player.id)).unwrap();
       if (!player.displayed) {
-        navigate("/gameview");
+        navigate('/gameview');
       }
     } catch {
       Swal.fire({
         title: 'Error!',
         text: 'Failed to toggle player display status',
-        icon: 'error'
+        icon: 'error',
       });
     }
   };
 
   return (
-    <TableRow style={{border: "2px solid black"}}>
-      <TableCell style={{borderRight: "2px solid black"}}>
+    <TableRow style={{ border: '2px solid black' }}>
+      <TableCell style={{ borderRight: '2px solid black' }}>
         <Typography>{player.name}</Typography>
       </TableCell>
-      <TableCell style={{borderRight: "2px solid black"}}>
+      <TableCell style={{ borderRight: '2px solid black' }}>
         <Typography>{player.character}</Typography>
       </TableCell>
-      <TableCell style={{borderRight: "2px solid black"}}>
+      <TableCell style={{ borderRight: '2px solid black' }}>
         <Typography>{player.level}</Typography>
       </TableCell>
-      <TableCell style={{borderRight: "2px solid black"}}>
+      <TableCell style={{ borderRight: '2px solid black' }}>
         <Typography>{player.class}</Typography>
       </TableCell>
-      <TableCell style={{borderRight: "2px solid black"}}>
-        <Typography>{player.game}</Typography>
+      <TableCell style={{ borderRight: '2px solid black' }}>
+        <Typography>{player.game_id}</Typography>
       </TableCell>
-      <TableCell style={{textAlign: "center"}}>
+      <TableCell style={{ textAlign: 'center' }}>
         <ButtonContained
           width="55px"
           height="25px"

@@ -12,11 +12,14 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Box,
 } from '@mui/material';
 import { Game } from '../../redux/reducers/game.reducer';
 import { PlayerState } from '../../redux/reducers/player.reducer';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
+import PlayerEntryModal from '../PlayerEntryModal/PlayerEntryModal';
+import ButtonContained from '../../global/components/ButtonContained';
 
 interface GameAccordionProps {
   game: Game;
@@ -24,9 +27,10 @@ interface GameAccordionProps {
 
 const GameAccordion: React.FC<GameAccordionProps> = ({ game }) => {
   const [expanded, setExpanded] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const players = useSelector((state: RootState) =>
-    state.player.players.filter((player) => player.game === game.name)
+    state.player.players.filter((player) => player.game_id === game.id)
   );
 
   return (
@@ -70,6 +74,12 @@ const GameAccordion: React.FC<GameAccordionProps> = ({ game }) => {
       </AccordionSummary>
 
       <AccordionDetails>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+          <ButtonContained
+            title="Add Player"
+            onClick={() => setModalOpen(true)}
+          />
+        </Box>
         {players.length > 0 ? (
           <TableContainer
             component={Paper}
@@ -147,6 +157,11 @@ const GameAccordion: React.FC<GameAccordionProps> = ({ game }) => {
             No players added to this game yet
           </Typography>
         )}
+        <PlayerEntryModal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          gameId={game.id}
+        />
       </AccordionDetails>
     </Accordion>
   );

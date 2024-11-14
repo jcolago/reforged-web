@@ -10,14 +10,14 @@ import ButtonContained from '../../global/components/ButtonContained';
 const DetailsView: React.FC = () => {
   const { id = '' } = useParams<{ id: string }>();
   const playerId = parseInt(id);
-  
+
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  const player = useSelector((state: RootState) => 
-    state.player.details?.[0] || null
+  const player = useSelector(
+    (state: RootState) => state.player.details?.[0] || null
   );
-  
+
   const status = useSelector((state: RootState) => state.player.status);
   const error = useSelector((state: RootState) => state.player.error);
 
@@ -59,42 +59,42 @@ const DetailsView: React.FC = () => {
 
   return (
     <>
-      <Typography 
+      <Typography
         variant="h4"
         style={{
-          textAlign: "center", 
-          margin: "10px", 
-          textDecoration: "underline"
+          textAlign: 'center',
+          margin: '10px',
+          textDecoration: 'underline',
         }}
       >
         Character Details
       </Typography>
-      <GlobalCard 
+      <GlobalCard
         width="80%"
-        style={{ 
-          border: "2px double black",
-          backgroundColor: "rgb(128, 150, 191, .5)",
-          display: "flex",
-          flexDirection: "column",
-          padding: "10px"
+        style={{
+          border: '2px double black',
+          backgroundColor: 'rgb(128, 150, 191, .5)',
+          display: 'flex',
+          flexDirection: 'column',
+          padding: '10px',
         }}
       >
         <GlobalCard
           style={{
-            backgroundColor: "rgb(226, 232, 243, .7)",
-            padding: "10px",
-            width: "90%",
-            margin: "20px auto",
+            backgroundColor: 'rgb(226, 232, 243, .7)',
+            padding: '10px',
+            width: '90%',
+            margin: '20px auto',
           }}
         >
           {player.image && (
-            <img 
-              style={{width: "197px", height: "255px"}} 
+            <img
+              style={{ width: '197px', height: '255px' }}
               src={player.image}
               alt={`${player.character}'s portrait`}
             />
           )}
-          
+
           <Typography>Player Name: {player.name}</Typography>
           <Typography>Character Name: {player.character}</Typography>
           <Typography>Character Class: {player.class}</Typography>
@@ -104,30 +104,48 @@ const DetailsView: React.FC = () => {
           <Typography>Armor Class: {player.armor_class}</Typography>
           <Typography>Speed: {player.speed}</Typography>
           <Typography>Initiative Bonus: {player.initiative_bonus}</Typography>
-          
-          <div style={{ marginTop: "20px" }}>
-            <Typography style={{ marginTop: "5px" }}>
-              Strength: {player.strength} Bonus: {player.strength_bonus} Save: {player.strength_save}
+
+          <div style={{ marginTop: '20px' }}>
+            <Typography style={{ marginTop: '5px' }}>
+              Strength: {player.strength}
+              {player.strength_bonus !== undefined &&
+                ` (${player.strength_bonus >= 0 ? '+' : ''}${player.strength_bonus})`}
+              Save: {player.strength_save}
             </Typography>
-            <Typography style={{ marginTop: "5px" }}>
-              Dexterity: {player.dexterity} Bonus: {player.dexterity_bonus} Save: {player.dexterity_save}
+            <Typography style={{ marginTop: '5px' }}>
+              Dexterity: {player.dexterity}
+              {player.dexterity_bonus !== undefined &&
+                ` (${player.dexterity_bonus >= 0 ? '+' : ''}${player.dexterity_bonus})`}
+              Save: {player.dexterity_save}
             </Typography>
-            <Typography style={{ marginTop: "5px" }}>
-              Constitution: {player.constitution} Bonus: {player.constitution_bonus} Save: {player.constitution_save}
+            <Typography style={{ marginTop: '5px' }}>
+              Constitution: {player.constitution}
+              {player.constitution_bonus !== undefined &&
+                ` (${player.constitution_bonus >= 0 ? '+' : ''}${player.constitution_bonus})`}
+              Save: {player.constitution_save}
             </Typography>
-            <Typography style={{ marginTop: "5px" }}>
-              Intelligence: {player.intelligence} Bonus: {player.intelligence_bonus} Save: {player.intelligence_save}
+            <Typography style={{ marginTop: '5px' }}>
+              Intelligence: {player.intelligence}
+              {player.intelligence_bonus !== undefined &&
+                ` (${player.intelligence_bonus >= 0 ? '+' : ''}${player.intelligence_bonus})`}
+              Save: {player.intelligence_save}
             </Typography>
-            <Typography style={{ marginTop: "5px" }}>
-              Wisdom: {player.wisdom} Bonus: {player.wisdom_bonus} Save: {player.wisdom_save}
+            <Typography style={{ marginTop: '5px' }}>
+              Wisdom: {player.wisdom}
+              {player.wisdom_bonus !== undefined &&
+                ` (${player.wisdom_bonus >= 0 ? '+' : ''}${player.wisdom_bonus})`}
+              Save: {player.wisdom_save}
             </Typography>
-            <Typography style={{ marginTop: "5px" }}>
-              Charisma: {player.charisma} Bonus: {player.charisma_bonus} Save: {player.charisma_save}
+            <Typography style={{ marginTop: '5px' }}>
+              Charisma: {player.charisma}
+              {player.charisma_bonus !== undefined &&
+                ` (${player.charisma_bonus >= 0 ? '+' : ''}${player.charisma_bonus})`}
+              Save: {player.charisma_save}
             </Typography>
           </div>
 
-          <div style={{ marginTop: "20px" }}>
-            <ButtonContained 
+          <div style={{ marginTop: '20px' }}>
+            <ButtonContained
               onClick={() => navigate(`/edit/${playerId}`)}
               marginRight="10px"
             >

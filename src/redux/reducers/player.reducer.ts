@@ -15,25 +15,26 @@ export interface PlayerState {
   speed: number;
   initiative_bonus: number;
   strength: number;
-  strength_bonus: number;
   strength_save: number;
   dexterity: number;
-  dexterity_bonus: number;
   dexterity_save: number;
   constitution: number;
-  constitution_bonus: number;
   constitution_save: number;
   intelligence: number;
-  intelligence_bonus: number;
   intelligence_save: number;
   wisdom: number;
-  wisdom_bonus: number;
   wisdom_save: number;
   charisma: number;
-  charisma_bonus: number;
   charisma_save: number;
   displayed: boolean;
-  game: string;
+  game_id: number;
+  // The bonus fields will come from the backend
+  strength_bonus?: number;
+  dexterity_bonus?: number;
+  constitution_bonus?: number;
+  intelligence_bonus?: number;
+  wisdom_bonus?: number;
+  charisma_bonus?: number;
 }
 
 export type CreatePlayerState = Omit<PlayerState, 'id'>;
@@ -52,25 +53,18 @@ export interface PlayerInfoFormValues {
   game: string;
 }
 
-// Player stats form values
 export interface PlayerStatsFormValues {
   strength: string;
-  strength_bonus: string;
   strength_save: string;
   dexterity: string;
-  dexterity_bonus: string;
   dexterity_save: string;
   constitution: string;
-  constitution_bonus: string;
   constitution_save: string;
   intelligence: string;
-  intelligence_bonus: string;
   intelligence_save: string;
   wisdom: string;
-  wisdom_bonus: string;
   wisdom_save: string;
   charisma: string;
-  charisma_bonus: string;
   charisma_save: string;
 }
 
@@ -88,7 +82,7 @@ export interface PlayersState {
 export const convertToPlayerState = (
   info: PlayerInfoFormValues,
   stats: PlayerStatsFormValues
-): CreatePlayerState => {
+): Omit<PlayerState, 'id'> => {
   return {
     name: info.name,
     character: info.character,
@@ -100,24 +94,18 @@ export const convertToPlayerState = (
     armor_class: parseInt(info.armor_class) || 0,
     speed: parseInt(info.speed) || 0,
     initiative_bonus: parseInt(info.initiative_bonus) || 0,
-    game: info.game,
+    game_id: parseInt(info.game),
     strength: parseInt(stats.strength) || 0,
-    strength_bonus: parseInt(stats.strength_bonus) || 0,
     strength_save: parseInt(stats.strength_save) || 0,
     dexterity: parseInt(stats.dexterity) || 0,
-    dexterity_bonus: parseInt(stats.dexterity_bonus) || 0,
     dexterity_save: parseInt(stats.dexterity_save) || 0,
     constitution: parseInt(stats.constitution) || 0,
-    constitution_bonus: parseInt(stats.constitution_bonus) || 0,
     constitution_save: parseInt(stats.constitution_save) || 0,
     intelligence: parseInt(stats.intelligence) || 0,
-    intelligence_bonus: parseInt(stats.intelligence_bonus) || 0,
     intelligence_save: parseInt(stats.intelligence_save) || 0,
     wisdom: parseInt(stats.wisdom) || 0,
-    wisdom_bonus: parseInt(stats.wisdom_bonus) || 0,
     wisdom_save: parseInt(stats.wisdom_save) || 0,
     charisma: parseInt(stats.charisma) || 0,
-    charisma_bonus: parseInt(stats.charisma_bonus) || 0,
     charisma_save: parseInt(stats.charisma_save) || 0,
     displayed: false
   };

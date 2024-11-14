@@ -2,35 +2,43 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { 
-  Typography, 
-  FormControl, 
-  InputLabel, 
-  OutlinedInput
+import {
+  Typography,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
 } from '@mui/material';
 import { AppDispatch, RootState } from '../../redux/store';
-import { 
+import {
   fetchPlayerDetails,
   updatePlayer,
-  PlayerState 
+  PlayerState,
 } from '../../redux/reducers/player.reducer';
 import GlobalCard from '../../global/components/GlobalCard';
 import ButtonContained from '../../global/components/ButtonContained';
 import FormWrapper from '../../global/components/FormWrapper';
 
 // Type for form values based on PlayerState
-type EditPlayerFormValues = Omit<PlayerState, 'id' | 'displayed'>;
+type EditPlayerFormValues = Omit<
+  PlayerState,
+  | 'id'
+  | 'displayed'
+  | 'strength_bonus'
+  | 'dexterity_bonus'
+  | 'constitution_bonus'
+  | 'intelligence_bonus'
+  | 'wisdom_bonus'
+  | 'charisma_bonus'
+>;
 
 const EditDetails: React.FC = () => {
   const { id = '' } = useParams<{ id: string }>();
   const playerId = parseInt(id);
-  
+
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  
-  const player = useSelector((state: RootState) => 
-    state.player.details?.[0]
-  );
+
+  const player = useSelector((state: RootState) => state.player.details?.[0]);
 
   const [formValues, setFormValues] = useState<EditPlayerFormValues>({
     name: '',
@@ -44,24 +52,18 @@ const EditDetails: React.FC = () => {
     speed: 0,
     initiative_bonus: 0,
     strength: 0,
-    strength_bonus: 0,
     strength_save: 0,
     dexterity: 0,
-    dexterity_bonus: 0,
     dexterity_save: 0,
     constitution: 0,
-    constitution_bonus: 0,
     constitution_save: 0,
     intelligence: 0,
-    intelligence_bonus: 0,
     intelligence_save: 0,
     wisdom: 0,
-    wisdom_bonus: 0,
     wisdom_save: 0,
     charisma: 0,
-    charisma_bonus: 0,
     charisma_save: 0,
-    game: ''
+    game_id: 0,
   });
 
   useEffect(() => {
@@ -80,41 +82,43 @@ const EditDetails: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
-    setFormValues(prev => ({
+    setFormValues((prev) => ({
       ...prev,
-      [name]: type === 'number' ? Number(value) : value
+      [name]: type === 'number' ? Number(value) : value,
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
-      await dispatch(updatePlayer({ 
-        id: playerId, 
-        playerData: {
-          ...formValues,
-          displayed: false
-        }
-      })).unwrap();
-      
+      await dispatch(
+        updatePlayer({
+          id: playerId,
+          playerData: {
+            ...formValues,
+            displayed: false,
+          },
+        })
+      ).unwrap();
+
       Swal.fire({
         title: 'Updated!',
         text: 'Character has been updated.',
-        icon: 'success'
+        icon: 'success',
       });
       navigate(`/details/${playerId}`);
     } catch {
       Swal.fire({
         title: 'Error!',
         text: 'Failed to update character.',
-        icon: 'error'
+        icon: 'error',
       });
     }
   };
 
   const renderField = (
-    fieldName: keyof EditPlayerFormValues, 
+    fieldName: keyof EditPlayerFormValues,
     label: string,
     type: 'text' | 'number' = 'text'
   ) => (
@@ -127,18 +131,18 @@ const EditDetails: React.FC = () => {
         value={formValues[fieldName]}
         onChange={handleChange}
         label={label}
-        style={{ margin: "5px" }}
+        style={{ margin: '5px' }}
       />
     </FormControl>
   );
 
   return (
     <>
-      <Typography 
-        variant="h4" 
+      <Typography
+        variant="h4"
         style={{
-          textDecoration: "underline",
-          textAlign: "center"
+          textDecoration: 'underline',
+          textAlign: 'center',
         }}
       >
         Edit Details
@@ -146,11 +150,11 @@ const EditDetails: React.FC = () => {
       <GlobalCard
         width="80%"
         style={{
-          border: "2px double black",
-          backgroundColor: "rgb(128, 150, 191, .5)",
-          display: "flex",
-          flexDirection: "column",
-          padding: "10px"
+          border: '2px double black',
+          backgroundColor: 'rgb(128, 150, 191, .5)',
+          display: 'flex',
+          flexDirection: 'column',
+          padding: '10px',
         }}
       >
         <ButtonContained
@@ -165,17 +169,17 @@ const EditDetails: React.FC = () => {
         <FormWrapper onSubmit={handleSubmit}>
           <GlobalCard
             style={{
-              margin: "5px",
-              backgroundColor: "rgb(226, 232, 243, .7)",
-              padding: "5px"
+              margin: '5px',
+              backgroundColor: 'rgb(226, 232, 243, .7)',
+              padding: '5px',
             }}
           >
-            <img 
-              style={{width: "197px", height: "255px"}} 
+            <img
+              style={{ width: '197px', height: '255px' }}
               src={formValues.image}
               alt="Character portrait"
             />
-            <Typography variant="h6" style={{textDecoration: "underline"}}>
+            <Typography variant="h6" style={{ textDecoration: 'underline' }}>
               Update Player Info
             </Typography>
 
@@ -194,30 +198,40 @@ const EditDetails: React.FC = () => {
 
           <GlobalCard
             style={{
-              margin: "5px",
-              backgroundColor: "rgb(226, 232, 243, .7)",
-              padding: "5px"
+              margin: '5px',
+              backgroundColor: 'rgb(226, 232, 243, .7)',
+              padding: '5px',
             }}
           >
-            <Typography variant="h6" style={{textDecoration: "underline"}}>
+            <Typography variant="h6" style={{ textDecoration: 'underline' }}>
               Update Player Stats
             </Typography>
 
             {/* Ability Score Fields */}
-            {['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'].map(ability => (
+            {[
+              'strength',
+              'dexterity',
+              'constitution',
+              'intelligence',
+              'wisdom',
+              'charisma',
+            ].map((ability) => (
               <div key={ability}>
-                {renderField(ability as keyof EditPlayerFormValues, ability.charAt(0).toUpperCase() + ability.slice(1), 'number')}
-                {renderField(`${ability}_bonus` as keyof EditPlayerFormValues, `${ability.charAt(0).toUpperCase() + ability.slice(1)} Bonus`, 'number')}
-                {renderField(`${ability}_save` as keyof EditPlayerFormValues, `${ability.charAt(0).toUpperCase() + ability.slice(1)} Save`, 'number')}
+                {renderField(
+                  ability as keyof EditPlayerFormValues,
+                  ability.charAt(0).toUpperCase() + ability.slice(1),
+                  'number'
+                )}
+                {renderField(
+                  `${ability}_save` as keyof EditPlayerFormValues,
+                  `${ability.charAt(0).toUpperCase() + ability.slice(1)} Save`,
+                  'number'
+                )}
               </div>
             ))}
           </GlobalCard>
 
-          <ButtonContained 
-            type="submit"
-            marginTop="25px"
-            marginLeft="317px"
-          >
+          <ButtonContained type="submit" marginTop="25px" marginLeft="317px">
             Submit
           </ButtonContained>
         </FormWrapper>
