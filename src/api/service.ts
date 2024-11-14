@@ -33,16 +33,16 @@ export const playerService = {
 
 // Monsters service
 export const monsterService = {
-  getMonsters: () => apiClient.get('/monsters/monsters'),
+  getMonsters: () => apiClient.get('/monsters'),
   getMonster: (id: number) => apiClient.get(`/monsters/${id}`),
-  addMonster: (monsterData: any) => apiClient.post('/monsters/add_monster', { monster: monsterData }),
-  removeMonster: (id: number) => apiClient.delete('/monsters/remove_monster', { data: { id } }),
+  addMonster: (monsterData: any) => apiClient.post('/monsters', { monster: monsterData }),
+  removeMonster: (id: number) => apiClient.delete(`/monsters/${id}`, { data: { id } }),
   updateMonster: (id: number, monsterData: any) => apiClient.patch(`/monsters/${id}`, { monster: monsterData }),
 };
 
 // Games service
 export const gameService = {
-  getGames: () => apiClient.get('/games'),
+  getGames: (userId: number) => apiClient.get(`/games?user_id=${userId}`),
   getGame: (id: number) => apiClient.get(`/games/${id}`),
   createGame: (gameData: any) => apiClient.post('/games', { game: gameData }),
   updateGame: (id: number, gameData: any) => apiClient.patch(`/games/${id}`, { game: gameData }),

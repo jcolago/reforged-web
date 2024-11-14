@@ -44,16 +44,16 @@ const initialState: GamesState = {
 
 // Async thunks
 export const fetchGames = createAsyncThunk(
-  'games/fetchGames',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await gameService.getGames();
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.errors || 'Failed to fetch games');
+    'games/fetchGames',
+    async (userId: number, { rejectWithValue }) => {
+      try {
+        const response = await gameService.getGames(userId);
+        return response.data;
+      } catch (error: any) {
+        return rejectWithValue(error.response?.data?.errors || 'Failed to fetch games');
+      }
     }
-  }
-);
+  );
 
 export const fetchGame = createAsyncThunk(
   'games/fetchGame',

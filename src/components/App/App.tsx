@@ -9,7 +9,7 @@ import {
   Navigate,
   Outlet,
 } from 'react-router-dom';
-import { AppDispatch } from '../../redux/store';
+import { AppDispatch, RootState } from '../../redux/store';
 import {
   selectIsAuthenticated,
   selectAuthStatus,
@@ -37,6 +37,7 @@ import MonsterSuccess from '../MonsterSuccess/MonsterSuccess';
 import MonsterTable from '../MonsterTable/MonsterTable';
 import MonsterDetails from '../MonsterDetails/MonsterDetails';
 import GameView from '../GameView/GameView';
+import { fetchGames } from '../../redux/reducers/game.reducer';
 
 const ProtectedRoute: React.FC = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
@@ -52,23 +53,28 @@ const ProtectedRoute: React.FC = () => {
 const App: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const isAuthenticated = useSelector(selectIsAuthenticated);
+  const user = useSelector((state: RootState) => state.auth.user);
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    if (token) {
+    if (token && !isAuthenticated) {
       dispatch(fetchCurrentUser())
         .unwrap()
-        .then(() => {
-          // After successful authentication, fetch initial data
-          dispatch(fetchPlayers());
-          dispatch(fetchMonsters());
-        })
         .catch((error) => {
           console.error('Failed to fetch current user:', error);
           localStorage.removeItem('token');
         });
     }
-  }, [dispatch, token]);
+  }, [dispatch, token, isAuthenticated]);
+
+  // Second useEffect to fetch initial data once authenticated
+  useEffect(() => {
+    if (isAuthenticated && user?.id) {
+      dispatch(fetchPlayers());
+      dispatch(fetchMonsters());
+      dispatch(fetchGames(user.id));
+    }
+  }, [dispatch, isAuthenticated, user?.id]);
 
   return (
     <Router>
