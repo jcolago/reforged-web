@@ -1,23 +1,24 @@
-// src/components/PlayerCard/PlayerCard.tsx
-
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { 
-  CardMedia, 
-  Typography, 
-  FormControl, 
-  InputLabel,
+import {
+  Box,
+  Typography,
+  Paper,
+  FormControl,
+  OutlinedInput,
   Select,
-  SelectChangeEvent,
-  MenuItem
+  MenuItem,
+  Divider,
+  Stack,
+  Grid,
 } from '@mui/material';
 import { AppDispatch, RootState } from '../../redux/store';
-import { PlayerState } from '../../redux/reducers/player.reducer';
-import { 
-  createPlayerCondition, 
-  updatePlayerCondition 
-} from '../../redux/reducers/player_condition.reducer';
-import GlobalCard from '../../global/components/GlobalCard';
+import {
+  PlayerState,
+  updatePlayerHP,
+  togglePlayerDisplay,
+} from '../../redux/reducers/player.reducer';
+import { createPlayerCondition } from '../../redux/reducers/player_condition.reducer';
 import ButtonContained from '../../global/components/ButtonContained';
 import ConditionItem from '../ConditionItem/ConditionItem';
 
@@ -27,188 +28,234 @@ interface PlayerCardProps {
 
 const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
   const dispatch = useDispatch<AppDispatch>();
-  
-  // Get conditions from the condition reducer
-  const conditions = useSelector((state: RootState) => 
-    state.condition.conditions
+
+  const conditions = useSelector(
+    (state: RootState) => state.condition.conditions
   );
-  
-  // Get player conditions from player_condition reducer
-  const playerConditions = useSelector((state: RootState) => 
+  console.log(conditions);
+
+  const playerConditions = useSelector((state: RootState) =>
     state.playerCondition.playerConditions.filter(
-      pc => pc.player_id === player.id
+      (pc) => pc.player_id === player.id
     )
   );
 
   const [formValues, setFormValues] = useState({
     conditionLength: '',
     conditionId: '',
-    newHp: player.current_hp.toString()
+    newHp: player.current_hp.toString(),
   });
 
-  useEffect(() => {
-    setFormValues(prev => ({
-      ...prev,
-      newHp: player.current_hp.toString()
-    }));
-  }, [player]);
+  const handleHpUpdate = async () => {
+    try {
+      await dispatch(
+        updatePlayerHP({
+          id: player.id,
+          current_hp: parseInt(formValues.newHp),
+        })
+      ).unwrap();
+    } catch (error) {
+      console.error('Failed to update HP:', error);
+    }
+  };
 
-  const handleConditionAdd = () => {
+  const handleConditionAdd = async () => {
     if (!formValues.conditionId || !formValues.conditionLength) return;
 
-    const conditionObj = {
-      condition_length: Number(formValues.conditionLength),
-      condition_id: Number(formValues.conditionId),
-      player_id: player.id
-    };
+    try {
+      await dispatch(
+        createPlayerCondition({
+          condition_length: parseInt(formValues.conditionLength),
+          condition_id: parseInt(formValues.conditionId),
+          player_id: player.id,
+        })
+      ).unwrap();
 
-    dispatch(createPlayerCondition(conditionObj));
-    setFormValues(prev => ({
-      ...prev,
-      conditionId: '',
-      conditionLength: ''
-    }));
+      setFormValues((prev) => ({
+        ...prev,
+        conditionId: '',
+        conditionLength: '',
+      }));
+    } catch (error) {
+      console.error('Failed to add condition:', error);
+    }
   };
 
-  const handleHpUpdate = () => {
-    dispatch(updatePlayerCondition({
-      id: player.id,
-      condition_length: Number(formValues.newHp)
-    }));
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormValues(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSelectChange = (e: SelectChangeEvent) => {
-    setFormValues(prev => ({
-      ...prev,
-      conditionId: e.target.value
-    }));
+  const handleRemove = async () => {
+    try {
+      await dispatch(
+        togglePlayerDisplay({
+          id: player.id,
+          displayed: false,
+        })
+      ).unwrap();
+    } catch (error) {
+      console.error('Failed to remove from view:', error);
+    }
   };
 
   return (
-    <GlobalCard 
-      style={{ 
-        padding: "5px", 
-        margin: "5px", 
-        width: "23%", 
-        backgroundColor: "rgb(226, 232, 243, .7)", 
-        flexBasis: "25%"
+    <Paper
+      elevation={3}
+      sx={{
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        borderRadius: 2,
+        overflow: 'hidden',
       }}
     >
-      <CardMedia style={{textAlign: "center"}}>
-        <img 
-          style={{width: "197px", height: "255px"}} 
+      {/* Character Header */}
+      <Box sx={{ p: 2, backgroundColor: 'rgba(44, 62, 80, 0.05)' }}>
+        <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
+          {player.character}
+        </Typography>
+        <Typography variant="subtitle2" color="text.secondary">
+          {player.name} • Level {player.level} {player.class}
+        </Typography>
+      </Box>
+
+      {/* Character Image */}
+      <Box
+        sx={{
+          width: '100%',
+          pt: '100%',
+          position: 'relative',
+          backgroundColor: 'rgba(0, 0, 0, 0.03)',
+        }}
+      >
+        <img
           src={player.image}
           alt={`${player.character}'s portrait`}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+          }}
         />
-      </CardMedia>
+      </Box>
 
-      <Typography>Player Name: {player.name}</Typography>
-      <Typography gutterBottom>Character Name: {player.character}</Typography>
+      {/* Stats Section */}
+      <Box sx={{ p: 2 }}>
+        {/* HP Management */}
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+            Hit Points
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <OutlinedInput
+              type="number"
+              value={formValues.newHp}
+              onChange={(e) =>
+                setFormValues((prev) => ({ ...prev, newHp: e.target.value }))
+              }
+              size="small"
+              sx={{ width: '80px' }}
+            />
+            <Typography>/ {player.total_hp}</Typography>
+            <ButtonContained
+              onClick={handleHpUpdate}
+              style={{ marginLeft: 'auto' }}
+            >
+              Update
+            </ButtonContained>
+          </Box>
+        </Box>
 
-      <Typography>
-        Hit Points: 
-        <FormControl>
-          <InputLabel htmlFor="newHp">Current HP</InputLabel>
-          <input
+        {/* Basic Stats */}
+        <Grid container spacing={2} sx={{ mb: 2 }}>
+          <Grid item xs={6}>
+            <Typography variant="subtitle2" color="text.secondary">
+              Armor Class
+            </Typography>
+            <Typography variant="body1">{player.armor_class}</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography variant="subtitle2" color="text.secondary">
+              Initiative
+            </Typography>
+            <Typography variant="body1">+{player.initiative_bonus}</Typography>
+          </Grid>
+        </Grid>
+
+        <Divider sx={{ my: 2 }} />
+
+        {/* Conditions Section */}
+        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+          Conditions
+        </Typography>
+
+        <Stack spacing={1} sx={{ mb: 2 }}>
+          {playerConditions.map((condition) => (
+            <ConditionItem key={condition.id} player={condition} />
+          ))}
+        </Stack>
+
+        {/* Add Condition */}
+        <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+          <OutlinedInput
             type="number"
-            name="newHp"
-            value={formValues.newHp}
-            onChange={handleInputChange}
-            style={{ 
-              maxHeight: "25px", 
-              maxWidth: "50px"
-            }}
-          />
-        </FormControl>
-        / {player.total_hp}
-        <ButtonContained
-          height="25px"
-          onClick={handleHpUpdate}
-          marginLeft="5px"
-        >
-          Update
-        </ButtonContained>
-      </Typography>
-
-      <Typography>Armor Class: {player.armor_class}</Typography>
-      <Typography>Initiative bonus: {player.initiative_bonus}</Typography>
-      
-      <hr />
-
-      {playerConditions.map(condition => (
-        <ConditionItem 
-          key={condition.id} 
-          player={condition}
-        />
-      ))}
-
-      <div style={{marginTop: "5px"}}>
-        <FormControl>
-          <InputLabel size="small" htmlFor="condition-length">
-            Length
-          </InputLabel>
-          <input
-            style={{width: "95px"}}
-            type="number"
-            name="conditionLength"
-            value={formValues.conditionLength}
-            onChange={handleInputChange}
-            placeholder="Length"
-          />
-        </FormControl>
-
-        <FormControl>
-          <InputLabel id="condition-label" size="small">
-            Condition
-          </InputLabel>
-          <Select
-            labelId="condition-label"
-            label="Condition"
+            placeholder="Duration"
             size="small"
-            value={formValues.conditionId}
-            onChange={handleSelectChange}
-            style={{width: "200px", marginLeft: "5px"}}
-          >
-            <MenuItem disabled value="">
-              Please select a condition
-            </MenuItem>
-            {conditions.map(condition => 
-              condition.name !== "None" && (
-                <MenuItem key={condition.id} value={condition.id}>
-                  <Typography>{condition.name}</Typography>
-                </MenuItem>
-              )
-            )}
-          </Select>
-        </FormControl>
-
+            value={formValues.conditionLength}
+            onChange={(e) =>
+              setFormValues((prev) => ({
+                ...prev,
+                conditionLength: e.target.value,
+              }))
+            }
+            sx={{ width: '100px' }}
+          />
+          <FormControl sx={{ flexGrow: 1 }}>
+            <Select
+              value={formValues.conditionId}
+              onChange={(e) =>
+                setFormValues((prev) => ({
+                  ...prev,
+                  conditionId: e.target.value,
+                }))
+              }
+              size="small"
+              displayEmpty
+            >
+              <MenuItem value="" disabled>
+                Select Condition
+              </MenuItem>
+              {conditions
+                .filter((condition) => condition.name !== 'None')
+                .map((condition) => (
+                  <MenuItem key={condition.id} value={condition.id}>
+                    {condition.name}
+                  </MenuItem>
+                ))}
+            </Select>
+          </FormControl>
+        </Box>
         <ButtonContained
-          height="25px"
-          marginBottom="3px"
-          marginTop="2px"
           onClick={handleConditionAdd}
+          style={{ width: '100%', marginBottom: '8px' }}
         >
           Add Condition
         </ButtonContained>
-      </div>
 
-      <div style={{textAlign: "left"}}>
+        {/* Remove from View */}
         <ButtonContained
-          onClick={() => dispatch({ type: 'REMOVE_PLAYER', payload: player.id })}
-          marginTop="5px"
+          onClick={handleRemove}
+          style={{
+            width: '100%',
+            backgroundColor: '#d32f2f',
+          }}
+          sx={{
+            '&:hover': {
+              backgroundColor: '#9a0007',
+            },
+          }}
         >
-          Remove
+          Remove from View
         </ButtonContained>
-      </div>
-    </GlobalCard>
+      </Box>
+    </Paper>
   );
 };
 

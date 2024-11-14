@@ -17,6 +17,8 @@ import {
 } from '../../redux/reducers/auth.reducer';
 import { fetchPlayers } from '../../redux/reducers/player.reducer';
 import { fetchMonsters } from '../../redux/reducers/monster.reducer';
+import { fetchGames } from '../../redux/reducers/game.reducer';
+import { fetchConditions } from '../../redux/reducers/condition.reducer';
 
 import './App.css';
 
@@ -34,7 +36,6 @@ import MonsterEntryForm from '../MonsterEntryForm/MonsterEntryForm';
 import MonsterTable from '../MonsterTable/MonsterTable';
 import MonsterDetails from '../MonsterDetails/MonsterDetails';
 import GameView from '../GameView/GameView';
-import { fetchGames } from '../../redux/reducers/game.reducer';
 
 const ProtectedRoute: React.FC = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
@@ -72,6 +73,7 @@ const App: React.FC = () => {
       dispatch(fetchPlayers());
       dispatch(fetchMonsters());
       dispatch(fetchGames(user.id));
+      dispatch(fetchConditions);
     }
   }, [dispatch, isAuthenticated, user?.id]);
 
