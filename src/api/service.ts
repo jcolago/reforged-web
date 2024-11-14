@@ -37,7 +37,8 @@ export const monsterService = {
   getMonster: (id: number) => apiClient.get(`/monsters/${id}`),
   addMonster: (monsterData: any) => apiClient.post('/monsters', { monster: monsterData }),
   removeMonster: (id: number) => apiClient.delete(`/monsters/${id}`, { data: { id } }),
-  updateMonster: (id: number, monsterData: any) => apiClient.patch(`/monsters/${id}`, { monster: monsterData }),
+  updateMonster: (id: number, monsterData: any) => 
+    apiClient.patch(`/monsters/${id}`, { monster: monsterData }),
 };
 
 // Games service

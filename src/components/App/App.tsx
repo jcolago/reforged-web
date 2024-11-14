@@ -31,7 +31,6 @@ import Success from '../Success/Success';
 import DetailsView from '../DetailsView/DetailsView';
 import EditDetails from '../EditDetails/EditDetails';
 import MonsterEntryForm from '../MonsterEntryForm/MonsterEntryForm';
-import MonsterSuccess from '../MonsterSuccess/MonsterSuccess';
 import MonsterTable from '../MonsterTable/MonsterTable';
 import MonsterDetails from '../MonsterDetails/MonsterDetails';
 import GameView from '../GameView/GameView';
@@ -111,7 +110,6 @@ const App: React.FC = () => {
           <Route path="/details/:id" element={<DetailsView />} />
           <Route path="/edit/:id" element={<EditDetails />} />
           <Route path="/monsterentry" element={<MonsterEntryForm />} />
-          <Route path="/monstersuccess" element={<MonsterSuccess />} />
           <Route path="/monsters" element={<MonsterTable />} />
           <Route path="/monsterdetails/:id" element={<MonsterDetails />} />
           <Route path="/gameview" element={<GameView />} />

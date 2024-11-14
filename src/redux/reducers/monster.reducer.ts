@@ -103,6 +103,18 @@ export const removeMonster = createAsyncThunk(
   }
 );
 
+export const toggleMonsterDisplay = createAsyncThunk(
+    'monsters/toggleDisplay',
+    async ({ id, displayed }: { id: number; displayed: boolean }, { rejectWithValue }) => {
+      try {
+        const response = await monsterService.updateMonster(id, { displayed });
+        return response.data;
+      } catch (error: any) {
+        return rejectWithValue(error.response?.data || 'Failed to toggle monster display');
+      }
+    }
+  );
+
 const monstersSlice = createSlice({
   name: 'monsters',
   initialState,
@@ -112,12 +124,6 @@ const monstersSlice = createSlice({
     },
     clearCurrentMonster: (state) => {
       state.currentMonster = null;
-    },
-    toggleMonsterDisplay: (state, action) => {
-      const monster = state.monsters.find(m => m.id === action.payload);
-      if (monster) {
-        monster.displayed = !monster.displayed;
-      }
     },
     clearMonsterError: (state) => {
       state.error = null;
@@ -185,14 +191,27 @@ const monstersSlice = createSlice({
       .addCase(removeMonster.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
-      });
+      })
+      .addCase(toggleMonsterDisplay.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(toggleMonsterDisplay.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        const index = state.monsters.findIndex(monster => monster.id === action.payload.id);
+        if (index !== -1) {
+          state.monsters[index] = action.payload;
+        }
+      })
+      .addCase(toggleMonsterDisplay.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
+      })
   },
 });
 
 export const { 
   setCurrentMonster, 
   clearCurrentMonster, 
-  toggleMonsterDisplay,
   clearMonsterError
 } = monstersSlice.actions;
 

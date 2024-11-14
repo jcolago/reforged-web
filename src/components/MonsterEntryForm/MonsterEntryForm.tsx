@@ -1,24 +1,33 @@
-// src/components/MonsterEntryForm/MonsterEntryForm.tsx
-
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { 
-  InputLabel, 
-  FormControl,  
+import {
+  InputLabel,
+  FormControl,
   Select,
-  SelectChangeEvent, 
+  SelectChangeEvent,
   MenuItem,
-  OutlinedInput
+  OutlinedInput,
+  Container,
+  Typography,
+  Box,
+  Grid,
+  Paper,
+  Stepper,
+  Step,
+  StepLabel,
 } from '@mui/material';
+import Swal from 'sweetalert2';
 import { AppDispatch, RootState } from '../../redux/store';
-import { addMonster } from '../../redux/reducers/monster.reducer';
+import {
+  addMonster,
+  MonsterSize,
+  MonsterAlignment,
+} from '../../redux/reducers/monster.reducer';
 import GlobalCard from '../../global/components/GlobalCard';
 import ButtonContained from '../../global/components/ButtonContained';
-import FormWrapper from '../../global/components/FormWrapper';
 
-// Import the enum from your monster reducer
-import { MonsterSize, MonsterAlignment } from '../../redux/reducers/monster.reducer';
+const steps = ['Basic Info', 'Combat Stats'];
 
 interface MonsterFormValues {
   name: string;
@@ -34,15 +43,10 @@ interface MonsterFormValues {
   game_id: number;
 }
 
-interface Game {
-  id: number;
-  name: string;
-}
-
 const initialFormValues: MonsterFormValues = {
   name: '',
-  size: MonsterSize.Medium, // Set a default value from enum
-  alignment: MonsterAlignment.TrueNeutral, // Set a default value from enum
+  size: MonsterSize.Medium,
+  alignment: MonsterAlignment.TrueNeutral,
   armor_class: 0,
   hit_points: 0,
   speed: 0,
@@ -50,77 +54,95 @@ const initialFormValues: MonsterFormValues = {
   p_bonus: 0,
   attacks: '',
   displayed: false,
-  game_id: 0
+  game_id: 0,
 };
 
 const MonsterEntryForm: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const games = useSelector((state: RootState) => state.game.games);
+  const [activeStep, setActiveStep] = useState(0);
 
-  const [formValues, setFormValues] = useState<MonsterFormValues>(initialFormValues);
+  const [formValues, setFormValues] =
+    useState<MonsterFormValues>(initialFormValues);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormValues(prev => ({
+    setFormValues((prev) => ({
       ...prev,
-      [name]: name === 'armor_class' || name === 'hit_points' || 
-              name === 'speed' || name === 'p_bonus' 
-              ? Number(value) 
-              : value
+      [name]:
+        name === 'armor_class' ||
+        name === 'hit_points' ||
+        name === 'speed' ||
+        name === 'p_bonus'
+          ? Number(value)
+          : value,
     }));
   };
 
   const handleSelectChange = (e: SelectChangeEvent) => {
     const { name, value } = e.target;
-    setFormValues(prev => ({
+    setFormValues((prev) => ({
       ...prev,
-      [name]: name === 'game_id' ? Number(value) : value
+      [name]: name === 'game_id' ? Number(value) : value,
     }));
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    dispatch(addMonster(formValues));
-    setFormValues(initialFormValues);
-    navigate('/monstersuccess');
+  const handleNext = () => {
+    setActiveStep((prevStep) => prevStep + 1);
   };
 
-  return (
-    <GlobalCard 
-      width="100%" 
-      style={{
-        border: "2px double black", 
-        backgroundColor: "rgb(128, 150, 191, .5)"
-      }}
+  const handleBack = () => {
+    setActiveStep((prevStep) => prevStep - 1);
+  };
+
+  const handleSubmit = async () => {
+    try {
+      await dispatch(addMonster(formValues)).unwrap();
+      // Show success message
+      Swal.fire({
+        title: 'Success!',
+        text: 'Monster has been created',
+        icon: 'success',
+        timer: 1500,
+        showConfirmButton: false,
+      }).then(() => {
+        // Navigate to monster list after success message
+        navigate('/monsters');
+      });
+    } catch {
+      Swal.fire({
+        title: 'Error!',
+        text: 'Failed to create monster',
+        icon: 'error',
+      });
+    }
+  };
+  const renderBasicInfo = () => (
+    <Paper
+      elevation={3}
+      sx={{ p: 3, backgroundColor: 'rgba(255, 255, 255, 0.9)' }}
     >
-      <GlobalCard 
-        style={{
-          margin: "20px",
-          padding: "5px",
-          backgroundColor: "rgb(226, 232, 243, .7)"
-        }}
-      >
-        <h2 style={{ textDecoration: "underline" }}>Enter Monster Info</h2>
-        <FormWrapper onSubmit={handleSubmit}>
-          <FormControl>
-            <InputLabel htmlFor="name">Monster Name</InputLabel>
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <FormControl fullWidth>
+            <InputLabel>Monster Name</InputLabel>
             <OutlinedInput
               required
-              id="name"
               name="name"
               value={formValues.name}
               onChange={handleChange}
               label="Monster Name"
-              style={{margin: "5px"}}
             />
           </FormControl>
+        </Grid>
 
-          <FormControl style={{margin: "5px"}}>
-            <InputLabel id="size-label">Size</InputLabel>
+        <Grid item xs={12} md={6}>
+          <FormControl fullWidth>
+            <InputLabel>Size</InputLabel>
             <Select
-              labelId="size-label"
-              id="size"
               name="size"
               value={formValues.size}
               onChange={handleSelectChange}
@@ -133,12 +155,12 @@ const MonsterEntryForm: React.FC = () => {
               ))}
             </Select>
           </FormControl>
+        </Grid>
 
-          <FormControl style={{margin: "5px"}}>
-            <InputLabel id="alignment-label">Alignment</InputLabel>
+        <Grid item xs={12} md={6}>
+          <FormControl fullWidth>
+            <InputLabel>Alignment</InputLabel>
             <Select
-              labelId="alignment-label"
-              id="alignment"
               name="alignment"
               value={formValues.alignment}
               onChange={handleSelectChange}
@@ -146,82 +168,180 @@ const MonsterEntryForm: React.FC = () => {
             >
               {Object.values(MonsterAlignment).map((alignment) => (
                 <MenuItem key={alignment} value={alignment}>
-                  {alignment.split('_').map(word => 
-                    word.charAt(0).toUpperCase() + word.slice(1)
-                  ).join(' ')}
+                  {alignment
+                    .split('_')
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ')}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
+        </Grid>
 
-          <FormControl style={{margin: "5px"}}>
-            <InputLabel htmlFor="game_id">Select a Game</InputLabel>
+        <Grid item xs={12}>
+          <FormControl fullWidth>
+            <InputLabel>Select Game</InputLabel>
             <Select
               value={formValues.game_id.toString()}
               onChange={handleSelectChange}
-              label="Select a Game"
               name="game_id"
-              id="game_id"
+              label="Select Game"
             >
-              <MenuItem value="" disabled>Please select a game name</MenuItem>
-              {games.map((game: Game) => (
-                <MenuItem value={game.id.toString()} key={game.id}>
+              <MenuItem value="0" disabled>
+                Please select a game
+              </MenuItem>
+              {games.map((game) => (
+                <MenuItem key={game.id} value={game.id.toString()}>
                   {game.name}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
+        </Grid>
+      </Grid>
+    </Paper>
+  );
 
-          {/* Add number input fields */}
-          {['armor_class', 'hit_points', 'speed', 'p_bonus'].map((field) => (
-            <FormControl key={field} style={{margin: "5px"}}>
-              <InputLabel htmlFor={field}>
-                {field.split('_').map(word => 
-                  word.charAt(0).toUpperCase() + word.slice(1)
-                ).join(' ')}
-              </InputLabel>
-              <OutlinedInput
-                required
-                id={field}
-                name={field}
-                type="number"
-                value={formValues[field as keyof MonsterFormValues]}
-                onChange={handleChange}
-                label={field.split('_').map(word => 
-                  word.charAt(0).toUpperCase() + word.slice(1)
-                ).join(' ')}
-              />
-            </FormControl>
+  const renderCombatStats = () => (
+    <Paper
+      elevation={3}
+      sx={{ p: 3, backgroundColor: 'rgba(255, 255, 255, 0.9)' }}
+    >
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <FormControl fullWidth>
+            <InputLabel>Armor Class</InputLabel>
+            <OutlinedInput
+              required
+              name="armor_class"
+              type="number"
+              value={formValues.armor_class}
+              onChange={handleChange}
+              label="Armor Class"
+            />
+          </FormControl>
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <FormControl fullWidth>
+            <InputLabel>Hit Points</InputLabel>
+            <OutlinedInput
+              required
+              name="hit_points"
+              type="number"
+              value={formValues.hit_points}
+              onChange={handleChange}
+              label="Hit Points"
+            />
+          </FormControl>
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <FormControl fullWidth>
+            <InputLabel>Speed</InputLabel>
+            <OutlinedInput
+              required
+              name="speed"
+              type="number"
+              value={formValues.speed}
+              onChange={handleChange}
+              label="Speed"
+            />
+          </FormControl>
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <FormControl fullWidth>
+            <InputLabel>Proficiency Bonus</InputLabel>
+            <OutlinedInput
+              required
+              name="p_bonus"
+              type="number"
+              value={formValues.p_bonus}
+              onChange={handleChange}
+              label="Proficiency Bonus"
+            />
+          </FormControl>
+        </Grid>
+
+        <Grid item xs={12}>
+          <FormControl fullWidth>
+            <InputLabel>Resistances</InputLabel>
+            <OutlinedInput
+              name="resistances"
+              value={formValues.resistances}
+              onChange={handleChange}
+              label="Resistances"
+              multiline
+              rows={3}
+            />
+          </FormControl>
+        </Grid>
+
+        <Grid item xs={12}>
+          <FormControl fullWidth>
+            <InputLabel>Attacks</InputLabel>
+            <OutlinedInput
+              name="attacks"
+              value={formValues.attacks}
+              onChange={handleChange}
+              label="Attacks"
+              multiline
+              rows={3}
+            />
+          </FormControl>
+        </Grid>
+      </Grid>
+    </Paper>
+  );
+
+  return (
+    <Container maxWidth="lg">
+      <GlobalCard
+        style={{
+          padding: '2rem',
+          backgroundColor: 'rgb(226, 232, 243, .9)',
+          marginTop: '2rem',
+        }}
+      >
+        <Typography
+          variant="h4"
+          align="center"
+          sx={{
+            fontWeight: 'bold',
+            color: '#2c3e50',
+            mb: 4,
+          }}
+        >
+          Create New Monster
+        </Typography>
+
+        <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+          {steps.map((label) => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
           ))}
+        </Stepper>
 
-          {/* Text fields for resistances and attacks */}
-          {['resistances', 'attacks'].map((field) => (
-            <FormControl key={field} style={{margin: "5px"}}>
-              <InputLabel htmlFor={field}>
-                {field.charAt(0).toUpperCase() + field.slice(1)}
-              </InputLabel>
-              <OutlinedInput
-                id={field}
-                name={field}
-                value={formValues[field as keyof MonsterFormValues]}
-                onChange={handleChange}
-                label={field.charAt(0).toUpperCase() + field.slice(1)}
-                multiline
-                rows={2}
-              />
-            </FormControl>
-          ))}
+        <Box sx={{ mt: 4 }}>
+          {activeStep === 0 ? renderBasicInfo() : renderCombatStats()}
+        </Box>
 
-          <ButtonContained 
-            type="submit"
-            marginTop="22px"
-            marginLeft="935px"
-          >
-            Submit
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
+          <ButtonContained onClick={handleBack} disabled={activeStep === 0}>
+            Back
           </ButtonContained>
-        </FormWrapper>
+          {activeStep === steps.length - 1 ? (
+            <ButtonContained onClick={handleSubmit}>
+              Create Monster
+            </ButtonContained>
+          ) : (
+            <ButtonContained onClick={handleNext}>Next</ButtonContained>
+          )}
+        </Box>
       </GlobalCard>
-    </GlobalCard>
+    </Container>
   );
 };
 

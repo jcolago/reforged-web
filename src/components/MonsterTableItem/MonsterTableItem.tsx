@@ -1,17 +1,16 @@
-// src/components/MonsterTableItem/MonsterTableItem.tsx
-
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { TableRow, TableCell, Typography } from '@mui/material';
+import { TableRow, TableCell, Box } from '@mui/material';
 import { AppDispatch } from '../../redux/store';
-import { 
+import {
   MonsterState,
-  removeMonster, 
-  toggleMonsterDisplay 
+  removeMonster,
+  toggleMonsterDisplay,
 } from '../../redux/reducers/monster.reducer';
 import ButtonContained from '../../global/components/ButtonContained';
+import { tableStyles } from '../styles';
 
 interface MonsterTableItemProps {
   monster: MonsterState;
@@ -23,69 +22,110 @@ const MonsterTableItem: React.FC<MonsterTableItemProps> = ({ monster }) => {
 
   const handleDelete = () => {
     Swal.fire({
-      title: "Are you sure?",
-      text: "This monster will be deleted.",
+      title: 'Are you sure?',
+      text: 'This monster will be deleted.',
       icon: 'warning',
-      showCancelButton: true
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire(
-          'Deleted!',
-          'The monster has been removed',
-          'success'
-        );
-        dispatch(removeMonster(monster.id));
+        dispatch(removeMonster(monster.id))
+          .unwrap()
+          .then(() => {
+            Swal.fire({
+              title: 'Deleted!',
+              text: 'Monster has been removed.',
+              icon: 'success',
+              timer: 1500,
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+            Swal.fire({
+              title: 'Error!',
+              text: 'Failed to delete monster.',
+              icon: 'error',
+            });
+          });
       }
     });
   };
 
+  const handleToggleDisplay = async () => {
+    try {
+      await dispatch(
+        toggleMonsterDisplay({
+          id: monster.id,
+          displayed: !monster.displayed,
+        })
+      ).unwrap();
+
+      if (!monster.displayed) {
+        Swal.fire({
+          title: 'Success!',
+          text: 'Monster is now displayed in game view',
+          icon: 'success',
+          timer: 1500,
+        });
+      }
+    } catch {
+      Swal.fire({
+        title: 'Error!',
+        text: 'Failed to toggle display status',
+        icon: 'error',
+      });
+    }
+  };
+
   return (
-    <TableRow style={{border: "2px solid black"}}>
-      <TableCell style={{borderRight: "2px solid black"}}>
-        <Typography>{monster.name}</Typography>
-      </TableCell>
-      <TableCell style={{borderRight: "2px solid black"}}>
-        <Typography>{monster.size}</Typography>
-      </TableCell>
-      <TableCell style={{borderRight: "2px solid black"}}>
-        <Typography>{monster.hit_points}</Typography>
-      </TableCell>
-      <TableCell style={{borderRight: "2px solid black"}}>
-        <Typography>{monster.game_id}</Typography>
-      </TableCell>
-      <TableCell style={{textAlign: "center"}}>
-        <ButtonContained
-          width="55px"
-          height="25px"
-          onClick={() => navigate(`/monsterdetails/${monster.id}`)}
-        >
-          Details
-        </ButtonContained>
-        <ButtonContained
-          width="55px"
-          height="25px"
-          backgroundColor="red" 
-          color= "white"
-          onClick={handleDelete}
-        >
-          Delete
-        </ButtonContained>
-        {!monster.displayed ? (
+    <TableRow hover>
+      <TableCell sx={tableStyles.cell}>{monster.name}</TableCell>
+      <TableCell sx={tableStyles.cell}>{monster.size}</TableCell>
+      <TableCell sx={tableStyles.cell}>{monster.hit_points}</TableCell>
+      <TableCell sx={tableStyles.cell}>{monster.game_id}</TableCell>
+      <TableCell sx={tableStyles.cell}>
+        <Box display="flex" justifyContent="center" gap={1}>
           <ButtonContained
-            width="55px"
-            height="25px"
-            onClick={() => dispatch(toggleMonsterDisplay(monster.id))}
+            onClick={() => navigate(`/monsterdetails/${monster.id}`)}
+            style={tableStyles.actionButton}
           >
-            Display
+            Details
           </ButtonContained>
-        ) : (
+
           <ButtonContained
-            height="25px"
-            onClick={() => navigate("/gameview")}
+            onClick={handleDelete}
+            style={{
+              ...tableStyles.actionButton,
+              backgroundColor: '#d32f2f',
+              color: 'white',
+            }}
+            sx={{
+              '&:hover': {
+                backgroundColor: '#9a0007',
+              },
+            }}
           >
-            Game View
+            Delete
           </ButtonContained>
-        )}
+
+          {!monster.displayed ? (
+            <ButtonContained
+              onClick={handleToggleDisplay}
+              style={tableStyles.actionButton}
+            >
+              Display
+            </ButtonContained>
+          ) : (
+            <ButtonContained
+              onClick={() => navigate('/gameview')}
+              style={tableStyles.actionButton}
+            >
+              Game View
+            </ButtonContained>
+          )}
+        </Box>
       </TableCell>
     </TableRow>
   );

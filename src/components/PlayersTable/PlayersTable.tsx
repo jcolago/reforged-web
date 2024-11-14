@@ -15,15 +15,13 @@ import {
 import { AppDispatch, RootState } from '../../redux/store';
 import { fetchPlayers } from '../../redux/reducers/player.reducer';
 import PlayerTableItem from '../PlayersTableItem/PlayersTableItem';
+import { tableStyles } from '../styles';
 
 const PlayersTable: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const players = useSelector((state: RootState) => {
-    console.log('Full Redux State:', state);
-    console.log('Players State:', state.player);
-    return state.player.players;
-  });
+  const players = useSelector((state: RootState) => state.player.players);
   const status = useSelector((state: RootState) => state.player.status);
+
   useEffect(() => {
     if (status === 'idle') {
       dispatch(fetchPlayers());
@@ -36,112 +34,57 @@ const PlayersTable: React.FC = () => {
         display="flex"
         justifyContent="center"
         alignItems="center"
-        minHeight="200px"
+        minHeight="400px"
       >
         <CircularProgress />
       </Box>
     );
   }
 
-  if (status === 'failed') {
+  if (players.length === 0) {
     return (
       <Box
         display="flex"
         justifyContent="center"
         alignItems="center"
-        minHeight="200px"
+        minHeight="400px"
       >
-        <Typography color="error">Error: </Typography>
-      </Box>
-    );
-  }
-
-  if (!players.length) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="200px"
-      >
-        <Typography>No players found</Typography>
+        <Typography variant="h6" color="textSecondary">
+          No players found. Add some players to get started!
+        </Typography>
       </Box>
     );
   }
 
   return (
-    <Paper
-      style={{
-        border: '2px double black',
-        padding: '10px',
-        margin: 'auto',
-        backgroundColor: 'rgb(128, 150, 191, .5)',
-        width: '90%',
-      }}
-    >
-      <TableContainer
-        style={{
-          maxWidth: '90%',
-          margin: 'auto',
-          marginTop: '15px',
-          marginBottom: '15px',
-          padding: '10px',
-          backgroundColor: 'rgb(226, 232, 243, .7)',
-        }}
-      >
-        <Table style={{ border: '2px solid black' }}>
-          <TableHead style={{ border: '2px solid black' }}>
-            <TableRow style={{ border: '2px solid black' }}>
-              <TableCell
-                style={{ border: '2px solid black', textAlign: 'center' }}
-              >
-                <Typography style={{ fontWeight: 'bold' }}>
-                  Player Name
-                </Typography>
-              </TableCell>
-              <TableCell
-                style={{ border: '2px solid black', textAlign: 'center' }}
-              >
-                <Typography style={{ fontWeight: 'bold' }}>
+    <Box>
+      <Typography variant="h4" sx={tableStyles.title}>
+        Player Characters
+      </Typography>
+      <Paper sx={tableStyles.container}>
+        <TableContainer component={Paper} sx={tableStyles.tableWrapper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell sx={tableStyles.headerCell}>Player Name</TableCell>
+                <TableCell sx={tableStyles.headerCell}>
                   Character Name
-                </Typography>
-              </TableCell>
-              <TableCell
-                style={{ border: '2px solid black', textAlign: 'center' }}
-              >
-                <Typography style={{ fontWeight: 'bold' }}>
-                  Character Level
-                </Typography>
-              </TableCell>
-              <TableCell
-                style={{ border: '2px solid black', textAlign: 'center' }}
-              >
-                <Typography style={{ fontWeight: 'bold' }}>
-                  Character Class
-                </Typography>
-              </TableCell>
-              <TableCell
-                style={{ border: '2px solid black', textAlign: 'center' }}
-              >
-                <Typography style={{ fontWeight: 'bold' }}>
-                  Game Name
-                </Typography>
-              </TableCell>
-              <TableCell
-                style={{ border: '2px solid black', textAlign: 'center' }}
-              >
-                <Typography style={{ fontWeight: 'bold' }}>Actions</Typography>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {players.map((player) => (
-              <PlayerTableItem key={player.id} player={player} />
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Paper>
+                </TableCell>
+                <TableCell sx={tableStyles.headerCell}>Level</TableCell>
+                <TableCell sx={tableStyles.headerCell}>Class</TableCell>
+                <TableCell sx={tableStyles.headerCell}>Game</TableCell>
+                <TableCell sx={tableStyles.headerCell}>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {players.map((player) => (
+                <PlayerTableItem key={player.id} player={player} />
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+    </Box>
   );
 };
 

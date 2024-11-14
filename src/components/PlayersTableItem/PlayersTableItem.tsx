@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { TableRow, TableCell, Typography } from '@mui/material';
+import { TableRow, TableCell, Box } from '@mui/material';
 import { AppDispatch } from '../../redux/store';
 import {
   PlayerState,
@@ -10,6 +10,7 @@ import {
   togglePlayerDisplay,
 } from '../../redux/reducers/player.reducer';
 import ButtonContained from '../../global/components/ButtonContained';
+import { tableStyles } from '../styles';
 
 interface PlayerTableItemProps {
   player: PlayerState;
@@ -25,19 +26,28 @@ const PlayerTableItem: React.FC<PlayerTableItemProps> = ({ player }) => {
       text: 'This character will be deleted.',
       icon: 'warning',
       showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(deletePlayer(player.id))
           .unwrap()
           .then(() => {
-            Swal.fire('Deleted!', 'The character has been removed', 'success');
+            Swal.fire({
+              title: 'Deleted!',
+              text: 'Character has been removed.',
+              icon: 'success',
+              timer: 1500,
+            });
           })
           .catch((error) => {
-            Swal.fire(
-              'Error!',
-              'Failed to delete character: ' + error,
-              'error'
-            );
+            console.log(error);
+            Swal.fire({
+              title: 'Error!',
+              text: 'Failed to delete character.',
+              icon: 'error',
+            });
           });
       }
     });
@@ -70,52 +80,51 @@ const PlayerTableItem: React.FC<PlayerTableItemProps> = ({ player }) => {
   };
 
   return (
-    <TableRow style={{ border: '2px solid black' }}>
-      <TableCell style={{ borderRight: '2px solid black' }}>
-        <Typography>{player.name}</Typography>
-      </TableCell>
-      <TableCell style={{ borderRight: '2px solid black' }}>
-        <Typography>{player.character}</Typography>
-      </TableCell>
-      <TableCell style={{ borderRight: '2px solid black' }}>
-        <Typography>{player.level}</Typography>
-      </TableCell>
-      <TableCell style={{ borderRight: '2px solid black' }}>
-        <Typography>{player.class}</Typography>
-      </TableCell>
-      <TableCell style={{ borderRight: '2px solid black' }}>
-        <Typography>{player.game_id}</Typography>
-      </TableCell>
-      <TableCell style={{ textAlign: 'center' }}>
-        <ButtonContained
-          width="55px"
-          height="25px"
-          onClick={() => navigate(`/details/${player.id}`)}
-        >
-          Details
-        </ButtonContained>
-        <ButtonContained
-          width="55px"
-          height="25px"
-          backgroundColor="red"
-          color="white"
-          onClick={handleDelete}
-        >
-          Delete
-        </ButtonContained>
-        {!player.displayed ? (
+    <TableRow hover>
+      <TableCell sx={tableStyles.cell}>{player.name}</TableCell>
+      <TableCell sx={tableStyles.cell}>{player.character}</TableCell>
+      <TableCell sx={tableStyles.cell}>{player.level}</TableCell>
+      <TableCell sx={tableStyles.cell}>{player.class}</TableCell>
+      <TableCell sx={tableStyles.cell}>{player.game_id}</TableCell>
+      <TableCell sx={tableStyles.cell}>
+        <Box display="flex" justifyContent="center" gap={1}>
           <ButtonContained
-            width="55px"
-            height="25px"
-            onClick={handleToggleDisplay}
+            onClick={() => navigate(`/details/${player.id}`)}
+            style={tableStyles.actionButton}
           >
-            Display
+            Details
           </ButtonContained>
-        ) : (
-          <ButtonContained height="25px" onClick={() => navigate('/gameview')}>
-            Game View
+          <ButtonContained
+            onClick={handleDelete}
+            style={{
+              ...tableStyles.actionButton,
+              backgroundColor: '#d32f2f',
+              color: 'white',
+            }}
+            sx={{
+              '&:hover': {
+                backgroundColor: '#9a0007',
+              },
+            }}
+          >
+            Delete
           </ButtonContained>
-        )}
+          {!player.displayed ? (
+            <ButtonContained
+              onClick={handleToggleDisplay}
+              style={tableStyles.actionButton}
+            >
+              Display
+            </ButtonContained>
+          ) : (
+            <ButtonContained
+              onClick={() => navigate('/gameview')}
+              style={tableStyles.actionButton}
+            >
+              Game View
+            </ButtonContained>
+          )}
+        </Box>
       </TableCell>
     </TableRow>
   );
