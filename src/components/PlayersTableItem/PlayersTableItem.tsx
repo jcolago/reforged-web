@@ -84,7 +84,7 @@ const PlayerTableItem: React.FC<PlayerTableItemProps> = ({ player }) => {
       <TableCell sx={tableStyles.cell}>{player.name}</TableCell>
       <TableCell sx={tableStyles.cell}>{player.character}</TableCell>
       <TableCell sx={tableStyles.cell}>{player.level}</TableCell>
-      <TableCell sx={tableStyles.cell}>{player.class}</TableCell>
+      <TableCell sx={tableStyles.cell}>{player.character_class}</TableCell>
       <TableCell sx={tableStyles.cell}>{player.game_id}</TableCell>
       <TableCell sx={tableStyles.cell}>
         <Box display="flex" justifyContent="center" gap={1}>

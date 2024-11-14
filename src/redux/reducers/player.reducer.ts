@@ -7,7 +7,7 @@ export interface PlayerState {
   name: string;
   character: string;
   image: string;
-  class: string;
+  character_class: string;
   level: number;
   current_hp: number;
   total_hp: number;
@@ -42,7 +42,7 @@ export type CreatePlayerState = Omit<PlayerState, 'id'>;
 export interface PlayerInfoFormValues {
   name: string;
   character: string;
-  class: string;
+  character_class: string;
   image: string;
   level: string;
   current_hp: string;
@@ -86,7 +86,7 @@ export const convertToPlayerState = (
   return {
     name: info.name,
     character: info.character,
-    class: info.class,
+    character_class: info.character_class,
     image: info.image,
     level: parseInt(info.level) || 0,
     current_hp: parseInt(info.current_hp) || 0,

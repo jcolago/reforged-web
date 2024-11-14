@@ -170,7 +170,7 @@ const DetailsView: React.FC = () => {
                 {player.character}
               </Typography>
               <Typography variant="subtitle1" color="textSecondary">
-                Level {player.level} {player.class}
+                Level {player.level} {player.character_class}
               </Typography>
             </Paper>
           </Grid>

@@ -25,7 +25,7 @@ const steps = ['Basic Info', 'Stats'];
 interface PlayerInfo {
   name: string;
   character: string;
-  class: string;
+  character_class: string;
   image: string;
   level: string;
   current_hp: string;
@@ -60,7 +60,7 @@ const PlayerEntryForm = () => {
   const [playerInfo, setPlayerInfo] = useState<PlayerInfo>({
     name: '',
     character: '',
-    class: '',
+    character_class: '',
     image: '',
     level: '',
     current_hp: '',
@@ -182,7 +182,7 @@ const PlayerEntryForm = () => {
         <OutlinedInput
           name="class"
           label="Character Class"
-          value={playerInfo.class}
+          value={playerInfo.character_class}
           onChange={handleInfoChange}
           required
         />

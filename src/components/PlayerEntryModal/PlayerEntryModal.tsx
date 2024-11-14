@@ -37,7 +37,7 @@ const PlayerEntryModal: React.FC<PlayerEntryModalProps> = ({
   const [playerInfo, setPlayerInfo] = useState({
     name: '',
     character: '',
-    class: '',
+    character_class: '',
     image: '',
     level: '',
     current_hp: '',
@@ -111,7 +111,7 @@ const PlayerEntryModal: React.FC<PlayerEntryModalProps> = ({
       setPlayerInfo({
         name: '',
         character: '',
-        class: '',
+        character_class: '',
         image: '',
         level: '',
         current_hp: '',
@@ -135,7 +135,7 @@ const PlayerEntryModal: React.FC<PlayerEntryModalProps> = ({
     setPlayerInfo({
       name: '',
       character: '',
-      class: '',
+      character_class: '',
       image: '',
       level: '',
       current_hp: '',
@@ -177,7 +177,7 @@ const PlayerEntryModal: React.FC<PlayerEntryModalProps> = ({
         <OutlinedInput
           name="class"
           label="Character Class"
-          value={playerInfo.class}
+          value={playerInfo.character_class}
           onChange={handleInfoChange}
           required
         />

@@ -45,7 +45,7 @@ const EditDetails: React.FC = () => {
   const [formValues, setFormValues] = useState<EditPlayerFormValues>({
     name: '',
     character: '',
-    class: '',
+    character_class: '',
     image: '',
     level: 0,
     current_hp: 0,
@@ -84,7 +84,7 @@ const EditDetails: React.FC = () => {
       setFormValues({
         name: player.name,
         character: player.character,
-        class: player.class,
+        character_class: player.character_class,
         image: player.image,
         level: player.level,
         current_hp: player.current_hp,
@@ -224,7 +224,7 @@ const EditDetails: React.FC = () => {
             <InputLabel>Character Class</InputLabel>
             <OutlinedInput
               name="class"
-              value={formValues.class}
+              value={formValues.character_class}
               onChange={handleChange}
               label="Character Class"
               required

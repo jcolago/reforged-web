@@ -138,7 +138,7 @@ const GameAccordion: React.FC<GameAccordionProps> = ({ game }) => {
                   >
                     <TableCell>{player.name}</TableCell>
                     <TableCell>{player.character}</TableCell>
-                    <TableCell>{player.class}</TableCell>
+                    <TableCell>{player.character_class}</TableCell>
                     <TableCell>{player.level}</TableCell>
                   </TableRow>
                 ))}

@@ -160,7 +160,7 @@ const PlayerCard: React.FC<{ player: PlayerState }> = ({ player }) => {
           {player.character}
         </Typography>
         <Typography variant="subtitle2" color="text.secondary">
-          {player.name} • Level {player.level} {player.class}
+          {player.name} • Level {player.level} {player.character_class}
         </Typography>
       </Box>
 
