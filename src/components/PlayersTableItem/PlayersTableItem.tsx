@@ -27,22 +27,43 @@ const PlayerTableItem: React.FC<PlayerTableItemProps> = ({ player }) => {
       showCancelButton: true,
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire('Deleted!', 'The character has been removed', 'success');
-        dispatch(deletePlayer(player.id));
+        dispatch(deletePlayer(player.id))
+          .unwrap()
+          .then(() => {
+            Swal.fire('Deleted!', 'The character has been removed', 'success');
+          })
+          .catch((error) => {
+            Swal.fire(
+              'Error!',
+              'Failed to delete character: ' + error,
+              'error'
+            );
+          });
       }
     });
   };
 
   const handleToggleDisplay = async () => {
     try {
-      await dispatch(togglePlayerDisplay(player.id)).unwrap();
+      await dispatch(
+        togglePlayerDisplay({
+          id: player.id,
+          displayed: !player.displayed,
+        })
+      ).unwrap();
+
       if (!player.displayed) {
-        navigate('/gameview');
+        Swal.fire({
+          title: 'Success!',
+          text: 'Character is now displayed in game view',
+          icon: 'success',
+          timer: 1500,
+        });
       }
     } catch {
       Swal.fire({
         title: 'Error!',
-        text: 'Failed to toggle player display status',
+        text: 'Failed to toggle display status',
         icon: 'error',
       });
     }
@@ -82,13 +103,19 @@ const PlayerTableItem: React.FC<PlayerTableItemProps> = ({ player }) => {
         >
           Delete
         </ButtonContained>
-        <ButtonContained
-          width="55px"
-          height="25px"
-          onClick={handleToggleDisplay}
-        >
-          {player.displayed ? 'Game View' : 'Display'}
-        </ButtonContained>
+        {!player.displayed ? (
+          <ButtonContained
+            width="55px"
+            height="25px"
+            onClick={handleToggleDisplay}
+          >
+            Display
+          </ButtonContained>
+        ) : (
+          <ButtonContained height="25px" onClick={() => navigate('/gameview')}>
+            Game View
+          </ButtonContained>
+        )}
       </TableCell>
     </TableRow>
   );

@@ -75,15 +75,15 @@ const DetailsView: React.FC = () => {
   );
 
   useEffect(() => {
-    if (!player) {
-      dispatch(fetchPlayers())
-        .unwrap()
-        .then(() => setIsLoading(false))
-        .catch(() => setIsLoading(false));
-    } else {
-      setIsLoading(false);
-    }
-  }, [dispatch, player]);
+    setIsLoading(true);
+    dispatch(fetchPlayers())
+      .unwrap()
+      .then(() => setIsLoading(false))
+      .catch((error) => {
+        console.error('Error fetching players:', error);
+        setIsLoading(false);
+      });
+  }, [dispatch]);
 
   if (isLoading) {
     return (

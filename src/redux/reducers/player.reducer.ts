@@ -172,16 +172,9 @@ export const updatePlayer = createAsyncThunk(
 
 export const togglePlayerDisplay = createAsyncThunk(
   'players/toggleDisplay',
-  async (id: number, { getState, rejectWithValue }) => {
+  async ({ id, displayed }: { id: number; displayed: boolean }, { rejectWithValue }) => {
     try {
-      const state = getState() as { player: PlayersState };
-      const player = state.player.players.find(p => p.id === id);
-      
-      if (!player) {
-        throw new Error('Player not found');
-      }
-
-      const response = await playerService.togglePlayerDisplay(id, !player.displayed);
+      const response = await playerService.updatePlayer(id, { displayed });
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || 'Failed to toggle player display');
@@ -274,6 +267,15 @@ const playersSlice = createSlice({
       .addCase(togglePlayerDisplay.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
+      })
+      .addCase(updatePlayer.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        // Update the player in the array
+        const index = state.players.findIndex(player => player.id === action.payload.id);
+        if (index !== -1) {
+          state.players[index] = action.payload;
+        }
+        state.error = null;
       });
   },
 });
