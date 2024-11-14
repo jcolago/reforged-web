@@ -175,7 +175,7 @@ const PlayerEntryModal: React.FC<PlayerEntryModalProps> = ({
       <FormControl>
         <InputLabel>Character Class</InputLabel>
         <OutlinedInput
-          name="class"
+          name="character_class"
           label="Character Class"
           value={playerInfo.character_class}
           onChange={handleInfoChange}

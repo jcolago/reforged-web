@@ -67,7 +67,7 @@ const UserDashboard: React.FC = () => {
           mb: 3,
         }}
       >
-        Welcome, {user.email}!
+        Welcome, Elevate!
       </Typography>
 
       <GlobalCard
