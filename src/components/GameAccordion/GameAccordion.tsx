@@ -32,6 +32,7 @@ const GameAccordion: React.FC<GameAccordionProps> = ({ game }) => {
   const players = useSelector((state: RootState) =>
     state.player.players.filter((player) => player.game_id === game.id)
   );
+  console.log(players);
 
   return (
     <Accordion

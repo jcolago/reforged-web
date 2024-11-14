@@ -25,10 +25,8 @@ import LandingPage from '../LandingPage/LandingPage';
 import Nav from '../Nav/Nav';
 import Footer from '../Footer/Footer';
 import UserDashboard from '../UserDashboard/UserDashboard';
-import PlayerInfoForm from '../PlayerInfoForm/PlayerInfoForm';
-import PlayerStatInfoForm from '../PlayerStatInfoForm/PlayerStatInfoForm';
 import PlayersTable from '../PlayersTable/PlayersTable';
-import PlayerReview from '../PlayerReview/PlayerReview';
+import PlayerEntryForm from '../PlayerEntryForm/PlayerEnrtyFrom';
 import Success from '../Success/Success';
 import DetailsView from '../DetailsView/DetailsView';
 import EditDetails from '../EditDetails/EditDetails';
@@ -55,6 +53,8 @@ const App: React.FC = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const user = useSelector((state: RootState) => state.auth.user);
   const token = localStorage.getItem('token');
+  const player = useSelector((state: RootState) => state.player.players);
+  console.log(player);
 
   useEffect(() => {
     if (token && !isAuthenticated) {
@@ -105,10 +105,8 @@ const App: React.FC = () => {
         {/* Protected routes */}
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<UserDashboard />} />
-          <Route path="/playerinfo" element={<PlayerInfoForm />} />
-          <Route path="/stats" element={<PlayerStatInfoForm />} />
           <Route path="/players" element={<PlayersTable />} />
-          <Route path="/review" element={<PlayerReview />} />
+          <Route path="/playerinfo" element={<PlayerEntryForm />} />
           <Route path="/success" element={<Success />} />
           <Route path="/details/:id" element={<DetailsView />} />
           <Route path="/edit/:id" element={<EditDetails />} />

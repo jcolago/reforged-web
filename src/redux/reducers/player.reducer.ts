@@ -251,9 +251,10 @@ const playersSlice = createSlice({
         state.status = 'loading';
         state.error = null;
       })
-      .addCase(fetchPlayerDetails.fulfilled, (state, action) => {
+      .addCase(fetchPlayers.fulfilled, (state, action) => {
+        console.log('Fetch Players Fulfilled - Payload:', action.payload);
         state.status = 'succeeded';
-        state.details = Array.isArray(action.payload) ? action.payload : [action.payload];
+        state.players = Array.isArray(action.payload) ? action.payload : [];
         state.error = null;
       })
       .addCase(fetchPlayerDetails.rejected, (state, action) => {
