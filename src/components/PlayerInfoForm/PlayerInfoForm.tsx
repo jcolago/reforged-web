@@ -18,6 +18,7 @@ import GlobalCard from '../../global/components/GlobalCard';
 import ButtonContained from '../../global/components/ButtonContained';
 import FormWrapper from '../../global/components/FormWrapper';
 
+
 interface PlayerInfoFormValues {
     name: string;
     character: string;

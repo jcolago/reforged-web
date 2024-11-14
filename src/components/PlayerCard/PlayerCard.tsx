@@ -14,7 +14,7 @@ import {
 import { AppDispatch, RootState } from '../../redux/store';
 import { PlayerState } from '../../redux/reducers/player.reducer';
 import { 
-  addPlayerCondition, 
+  createPlayerCondition, 
   updatePlayerCondition 
 } from '../../redux/reducers/player_condition.reducer';
 import GlobalCard from '../../global/components/GlobalCard';
@@ -62,7 +62,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
       player_id: player.id
     };
 
-    dispatch(addPlayerCondition(conditionObj));
+    dispatch(createPlayerCondition(conditionObj));
     setFormValues(prev => ({
       ...prev,
       conditionId: '',

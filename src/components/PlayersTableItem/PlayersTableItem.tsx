@@ -1,5 +1,3 @@
-// src/components/PlayerTableItem/PlayerTableItem.tsx
-
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +7,7 @@ import { AppDispatch } from '../../redux/store';
 import { 
   PlayerState, 
   deletePlayer,
-  togglePlayerDisplay
+  togglePlayerDisplay 
 } from '../../redux/reducers/player.reducer';
 import ButtonContained from '../../global/components/ButtonContained';
 
@@ -37,6 +35,21 @@ const PlayerTableItem: React.FC<PlayerTableItemProps> = ({ player }) => {
         dispatch(deletePlayer(player.id));
       }
     });
+  };
+
+  const handleToggleDisplay = async () => {
+    try {
+      await dispatch(togglePlayerDisplay(player.id)).unwrap();
+      if (!player.displayed) {
+        navigate("/gameview");
+      }
+    } catch {
+      Swal.fire({
+        title: 'Error!',
+        text: 'Failed to toggle player display status',
+        icon: 'error'
+      });
+    }
   };
 
   return (
@@ -73,22 +86,13 @@ const PlayerTableItem: React.FC<PlayerTableItemProps> = ({ player }) => {
         >
           Delete
         </ButtonContained>
-        {!player.displayed ? (
-          <ButtonContained
-            width="55px"
-            height="25px"
-            onClick={() => dispatch(togglePlayerDisplay(player.id))}
-          >
-            Display
-          </ButtonContained>
-        ) : (
-          <ButtonContained
-            height="25px"
-            onClick={() => navigate("/gameview")}
-          >
-            Game View
-          </ButtonContained>
-        )}
+        <ButtonContained
+          width="55px"
+          height="25px"
+          onClick={handleToggleDisplay}
+        >
+          {player.displayed ? 'Game View' : 'Display'}
+        </ButtonContained>
       </TableCell>
     </TableRow>
   );

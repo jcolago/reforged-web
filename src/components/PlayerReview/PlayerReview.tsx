@@ -5,13 +5,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Container, CardHeader, Typography } from '@mui/material';
 import { AppDispatch, RootState } from '../../redux/store';
-import { addPlayer } from '../../redux/reducers/player.reducer';
+import { createPlayer, convertToPlayerState } from '../../redux/reducers/player.reducer';
 import GlobalCard from '../../global/components/GlobalCard';
 import ButtonContained from '../../global/components/ButtonContained';
 
 // Interfaces matching the form data from previous components
 interface PlayerInfo {
-  id?: number;
+  id: number;
   name: string;
   character: string;
   class: string;
@@ -44,6 +44,7 @@ interface PlayerStats {
     charisma: string;
     charisma_bonus: string;
     charisma_save: string;
+    displayed: false
 }
 
 const PlayerReview: React.FC = () => {
@@ -54,15 +55,12 @@ const PlayerReview: React.FC = () => {
   const playersInfo = useSelector((state: RootState) => state.player.playerInfo as PlayerInfo);
   const playerStats = useSelector((state: RootState) => state.player.playerStats as PlayerStats);
 
-
-  const characterObj = {
-    ...playersInfo,
-    ...playerStats,
-  };
-
   const handleSubmit = () => {
-    dispatch(addPlayer(characterObj));
-    navigate('/success');
+    if (playersInfo && playerStats) {
+      const playerData = convertToPlayerState(playersInfo, playerStats);
+      dispatch(createPlayer(playerData));
+      navigate('/success');
+    }
   };
 
   return (

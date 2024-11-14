@@ -1,5 +1,3 @@
-// src/components/DetailsView/DetailsView.tsx
-
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -21,6 +19,7 @@ const DetailsView: React.FC = () => {
   );
   
   const status = useSelector((state: RootState) => state.player.status);
+  const error = useSelector((state: RootState) => state.player.error);
 
   useEffect(() => {
     if (playerId && !isNaN(playerId)) {
@@ -28,8 +27,35 @@ const DetailsView: React.FC = () => {
     }
   }, [dispatch, playerId]);
 
-  if (status === 'loading') return <div>Loading...</div>;
-  if (!player) return <div>Player not found</div>;
+  if (status === 'loading') {
+    return (
+      <div className="text-center">
+        <Typography>Loading player details...</Typography>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center">
+        <Typography color="error">Error: {error}</Typography>
+        <ButtonContained onClick={() => navigate('/players')}>
+          Back to Player List
+        </ButtonContained>
+      </div>
+    );
+  }
+
+  if (!player) {
+    return (
+      <div className="text-center">
+        <Typography>Player not found</Typography>
+        <ButtonContained onClick={() => navigate('/players')}>
+          Back to Player List
+        </ButtonContained>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -61,11 +87,13 @@ const DetailsView: React.FC = () => {
             margin: "20px auto",
           }}
         >
-          <img 
-            style={{width: "197px", height: "255px"}} 
-            src={player.image}
-            alt={`${player.character}'s portrait`}
-          />
+          {player.image && (
+            <img 
+              style={{width: "197px", height: "255px"}} 
+              src={player.image}
+              alt={`${player.character}'s portrait`}
+            />
+          )}
           
           <Typography>Player Name: {player.name}</Typography>
           <Typography>Character Name: {player.character}</Typography>

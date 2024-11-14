@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { UpdatePlayerData } from '../redux/reducers/player.reducer';
 import apiClient from './client';
 
 // Auth service
@@ -23,7 +24,9 @@ export const playerService = {
   getPlayers: () => apiClient.get('/players'),
   getPlayer: (id: number) => apiClient.get(`/players/${id}`),
   createPlayer: (playerData: any) => apiClient.post('/players', { player: playerData }),
-  updatePlayer: (id: number, playerData: any) => apiClient.patch(`/players/${id}`, { player: playerData }),
+  updatePlayer: (id: number, playerData: UpdatePlayerData) => apiClient.patch(`/players/${id}`, { player: playerData }),
+  togglePlayerDisplay: (id: number, displayed: boolean) =>
+  apiClient.patch(`/players/${id}/toggle_display`, { displayed }),
   deletePlayer: (id: number) => apiClient.delete(`/players/${id}`),
   updatePlayerHP: (id: number, hp: number) => apiClient.patch(`/players/${id}/update_hp`, { current_hp: hp }),
 };

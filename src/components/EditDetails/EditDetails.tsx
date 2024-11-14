@@ -1,5 +1,3 @@
-// src/components/EditDetails/EditDetails.tsx
-
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -20,6 +18,7 @@ import GlobalCard from '../../global/components/GlobalCard';
 import ButtonContained from '../../global/components/ButtonContained';
 import FormWrapper from '../../global/components/FormWrapper';
 
+// Type for form values based on PlayerState
 type EditPlayerFormValues = Omit<PlayerState, 'id' | 'displayed'>;
 
 const EditDetails: React.FC = () => {
@@ -73,37 +72,9 @@ const EditDetails: React.FC = () => {
 
   useEffect(() => {
     if (player) {
-      setFormValues({
-        name: player.name,
-        character: player.character,
-        class: player.class,
-        image: player.image,
-        level: player.level,
-        current_hp: player.current_hp,
-        total_hp: player.total_hp,
-        armor_class: player.armor_class,
-        speed: player.speed,
-        initiative_bonus: player.initiative_bonus,
-        strength: player.strength,
-        strength_bonus: player.strength_bonus,
-        strength_save: player.strength_save,
-        dexterity: player.dexterity,
-        dexterity_bonus: player.dexterity_bonus,
-        dexterity_save: player.dexterity_save,
-        constitution: player.constitution,
-        constitution_bonus: player.constitution_bonus,
-        constitution_save: player.constitution_save,
-        intelligence: player.intelligence,
-        intelligence_bonus: player.intelligence_bonus,
-        intelligence_save: player.intelligence_save,
-        wisdom: player.wisdom,
-        wisdom_bonus: player.wisdom_bonus,
-        wisdom_save: player.wisdom_save,
-        charisma: player.charisma,
-        charisma_bonus: player.charisma_bonus,
-        charisma_save: player.charisma_save,
-        game: player.game
-      });
+      // Create form values from player data, omitting id and displayed
+      const { ...playerData } = player;
+      setFormValues(playerData);
     }
   }, [player]);
 
@@ -117,25 +88,28 @@ const EditDetails: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     try {
-      await dispatch(updatePlayer({
-          id: playerId,
+      await dispatch(updatePlayer({ 
+        id: playerId, 
+        playerData: {
           ...formValues,
           displayed: false
+        }
       })).unwrap();
       
-      Swal.fire(
-        'Updated!',
-        'Character has been updated.',
-        'success'
-      );
+      Swal.fire({
+        title: 'Updated!',
+        text: 'Character has been updated.',
+        icon: 'success'
+      });
       navigate(`/details/${playerId}`);
     } catch {
-      Swal.fire(
-        'Error!',
-        'Failed to update character.',
-        'error'
-      );
+      Swal.fire({
+        title: 'Error!',
+        text: 'Failed to update character.',
+        icon: 'error'
+      });
     }
   };
 
