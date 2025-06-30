@@ -148,44 +148,82 @@ const PlayerCard: React.FC<{ player: PlayerState }> = ({ player }) => {
         flexDirection: 'column',
       }}
     >
-      {/* Player Image and Basic Info */}
-
-      <Box sx={{ flex: 1 }}>
-        <Typography variant="h6" gutterBottom>
+      {/* Player Basic Info */}
+      <Box sx={{ mb: 2, textAlign: 'center' }}>
+        <Typography
+          variant="h6"
+          gutterBottom
+          sx={{ fontWeight: 'bold', color: '#2c3e50' }}
+        >
           {player.character}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
           Player: {player.name}
         </Typography>
-        <Typography variant="body2">
-          AC: {player.armor_class} | Initiative: +{player.initiative_bonus}
-        </Typography>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-around',
+            backgroundColor: 'rgba(128, 150, 191, 0.3)',
+            padding: 1,
+            borderRadius: 1,
+          }}
+        >
+          <Typography variant="body2" fontWeight="bold">
+            AC: {player.armor_class}
+          </Typography>
+          <Typography variant="body2" fontWeight="bold">
+            Initiative: +{player.initiative_bonus}
+          </Typography>
+          <Typography variant="body2" fontWeight="bold">
+            Level: {player.level}
+          </Typography>
+        </Box>
       </Box>
 
       {/* HP Management */}
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="body1" sx={{ mb: 1 }}>
-          Hit Points:
+      <Box
+        sx={{
+          mb: 2,
+          backgroundColor: 'rgba(255, 255, 255, 0.6)',
+          padding: 2,
+          borderRadius: 1,
+        }}
+      >
+        <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 'bold' }}>
+          Hit Points
         </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 1,
+          }}
+        >
           <input
             type="number"
             name="newHp"
             value={formValues.newHp}
             onChange={handleHpUpdate}
             style={{
-              width: '60px',
-              height: '32px',
-              padding: '4px 8px',
-              border: '1px solid #ccc',
+              width: '70px',
+              height: '40px',
+              padding: '8px',
+              border: '2px solid #3f51b5',
               borderRadius: '4px',
+              textAlign: 'center',
+              fontSize: '16px',
+              fontWeight: 'bold',
             }}
           />
-          <Typography>/ {player.total_hp}</Typography>
+          <Typography variant="h6" fontWeight="bold">
+            / {player.total_hp}
+          </Typography>
           <ButtonContained
-            height="32px"
+            height="40px"
             onClick={handleHpUpdate}
-            style={{ fontSize: '0.75rem', padding: '4px 8px' }}
+            style={{ fontSize: '0.875rem', padding: '8px 12px' }}
           >
             Update
           </ButtonContained>
@@ -195,13 +233,26 @@ const PlayerCard: React.FC<{ player: PlayerState }> = ({ player }) => {
       <Divider sx={{ my: 2 }} />
 
       {/* Conditions Section */}
-      <Box sx={{ mb: 2, flex: 1 }}>
-        <Typography variant="h6" gutterBottom>
+      <Box
+        sx={{
+          mb: 2,
+          flex: 1,
+          backgroundColor: 'rgba(255, 255, 255, 0.6)',
+          padding: 2,
+          borderRadius: 1,
+        }}
+      >
+        <Typography
+          variant="subtitle1"
+          gutterBottom
+          fontWeight="bold"
+          sx={{ textAlign: 'center' }}
+        >
           Active Conditions
         </Typography>
 
         {playerConditionsWithNames.length > 0 ? (
-          <Box sx={{ mb: 2 }}>
+          <Box sx={{ mb: 2, maxHeight: '200px', overflowY: 'auto' }}>
             {playerConditionsWithNames.map((condition) => (
               <Box key={condition.id} sx={{ mb: 1 }}>
                 <ConditionItem condition={condition} />
@@ -209,69 +260,90 @@ const PlayerCard: React.FC<{ player: PlayerState }> = ({ player }) => {
             ))}
           </Box>
         ) : (
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ mb: 2, textAlign: 'center', fontStyle: 'italic' }}
+          >
             No active conditions
           </Typography>
         )}
 
         {/* Add Condition */}
-        <Typography variant="subtitle2" gutterBottom>
-          Add Condition:
+        <Typography variant="subtitle2" gutterBottom fontWeight="bold">
+          Add New Condition:
         </Typography>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
           <Box sx={{ display: 'flex', gap: 1 }}>
-            <input
-              style={{
-                width: '60px',
-                height: '32px',
-                padding: '4px 8px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
               }}
-              type="number"
-              name="conditionLength"
-              value={formValues.conditionLength}
-              onChange={(e) =>
-                setFormValues((prev) => ({
-                  ...prev,
-                  conditionLength: e.target.value,
-                }))
-              }
-              placeholder="Rounds"
-            />
-
-            <FormControl size="small" sx={{ flex: 1 }}>
-              <Select
-                value={formValues.conditionId}
+            >
+              <Typography variant="caption" sx={{ mb: 0.5 }}>
+                Rounds
+              </Typography>
+              <input
+                style={{
+                  width: '70px',
+                  height: '36px',
+                  padding: '8px',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  textAlign: 'center',
+                }}
+                type="number"
+                name="conditionLength"
+                value={formValues.conditionLength}
                 onChange={(e) =>
                   setFormValues((prev) => ({
                     ...prev,
-                    conditionId: e.target.value,
+                    conditionLength: e.target.value,
                   }))
                 }
-                displayEmpty
-                sx={{ height: '32px' }}
-              >
-                <MenuItem value="" disabled>
-                  Select condition
-                </MenuItem>
-                {conditions.map(
-                  (condition) =>
-                    condition.name !== 'None' && (
-                      <MenuItem key={condition.id} value={condition.id}>
-                        {condition.name}
-                      </MenuItem>
-                    )
-                )}
-              </Select>
-            </FormControl>
+                placeholder="0"
+              />
+            </Box>
+
+            <Box sx={{ flex: 1 }}>
+              <Typography variant="caption" sx={{ mb: 0.5, display: 'block' }}>
+                Condition
+              </Typography>
+              <FormControl size="small" sx={{ width: '100%' }}>
+                <Select
+                  value={formValues.conditionId}
+                  onChange={(e) =>
+                    setFormValues((prev) => ({
+                      ...prev,
+                      conditionId: e.target.value,
+                    }))
+                  }
+                  displayEmpty
+                  sx={{ height: '36px' }}
+                >
+                  <MenuItem value="" disabled>
+                    Select condition
+                  </MenuItem>
+                  {conditions.map(
+                    (condition) =>
+                      condition.name !== 'None' && (
+                        <MenuItem key={condition.id} value={condition.id}>
+                          {condition.name}
+                        </MenuItem>
+                      )
+                  )}
+                </Select>
+              </FormControl>
+            </Box>
           </Box>
 
           <ButtonContained
-            height="32px"
+            height="36px"
             onClick={handleConditionAdd}
             disabled={!formValues.conditionId || !formValues.conditionLength}
-            style={{ fontSize: '0.75rem' }}
+            style={{ fontSize: '0.875rem', width: '100%' }}
           >
             Add Condition
           </ButtonContained>
@@ -286,6 +358,8 @@ const PlayerCard: React.FC<{ player: PlayerState }> = ({ player }) => {
             width: '100%',
             backgroundColor: '#f44336',
             color: 'white',
+            padding: '8px',
+            fontSize: '0.875rem',
           }}
         >
           Remove from Game View
