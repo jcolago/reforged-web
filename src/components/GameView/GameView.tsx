@@ -52,7 +52,7 @@ const GameView: React.FC = () => {
               </Typography>
             </Box>
           ) : (
-            <Grid container spacing={3}>
+            <Grid container spacing={1}>
               {players.map((player: PlayerState) => (
                 <Grid item xs={12} sm={6} md={4} lg={3} key={player.id}>
                   <PlayerCard player={player} />

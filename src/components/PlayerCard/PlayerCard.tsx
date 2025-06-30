@@ -59,6 +59,7 @@ const PlayerCard: React.FC<{ player: PlayerState }> = ({ player }) => {
     setFormValues((prev) => ({
       ...prev,
       newHp: player.current_hp.toString(),
+      // Revisit this, might not need to be a string
     }));
   }, [player.current_hp]);
 
@@ -158,29 +159,6 @@ const PlayerCard: React.FC<{ player: PlayerState }> = ({ player }) => {
           {player.name} • Level {player.level} {player.character_class}
         </Typography>
       </Box>
-
-      {/* Character Image
-      <Box
-        sx={{
-          width: '100%',
-          pt: '100%',
-          position: 'relative',
-          backgroundColor: 'rgba(0, 0, 0, 0.03)',
-        }}
-      >
-        <img
-          src={player.image}
-          alt={`${player.character}'s portrait`}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-          }}
-        />
-      </Box> */}
 
       {/* Stats Section */}
       <Box sx={{ p: 2 }}>
