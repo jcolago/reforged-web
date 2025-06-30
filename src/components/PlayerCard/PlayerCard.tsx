@@ -251,23 +251,43 @@ const PlayerCard: React.FC<{ player: PlayerState }> = ({ player }) => {
           Active Conditions
         </Typography>
 
-        {playerConditionsWithNames.length > 0 ? (
-          <Box sx={{ mb: 2, maxHeight: '200px', overflowY: 'auto' }}>
-            {playerConditionsWithNames.map((condition) => (
+        <Box
+          sx={{
+            mb: 2,
+            minHeight: '120px',
+            maxHeight: '120px',
+            overflowY: 'auto',
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+            padding: 1,
+            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          }}
+        >
+          {playerConditionsWithNames.length > 0 ? (
+            playerConditionsWithNames.map((condition) => (
               <Box key={condition.id} sx={{ mb: 1 }}>
                 <ConditionItem condition={condition} />
               </Box>
-            ))}
-          </Box>
-        ) : (
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ mb: 2, textAlign: 'center', fontStyle: 'italic' }}
-          >
-            No active conditions
-          </Typography>
-        )}
+            ))
+          ) : (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100%',
+              }}
+            >
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ textAlign: 'center', fontStyle: 'italic' }}
+              >
+                No active conditions
+              </Typography>
+            </Box>
+          )}
+        </Box>
 
         {/* Add Condition */}
         <Typography variant="subtitle2" gutterBottom fontWeight="bold">
