@@ -3,14 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   Box,
   Typography,
-  Paper,
   FormControl,
-  OutlinedInput,
   Select,
   MenuItem,
   Divider,
-  Stack,
-  Grid,
 } from '@mui/material';
 import { AppDispatch, RootState } from '../../redux/store';
 import { PlayerState, updatePlayer } from '../../redux/reducers/player.reducer';
@@ -21,6 +17,7 @@ import {
 import { fetchConditions } from '../../redux/reducers/condition.reducer';
 import ButtonContained from '../../global/components/ButtonContained';
 import ConditionItem from '../ConditionItem/ConditionItem';
+import GlobalCard from '../../global/components/GlobalCard';
 import Swal from 'sweetalert2';
 
 const PlayerCard: React.FC<{ player: PlayerState }> = ({ player }) => {
@@ -142,152 +139,159 @@ const PlayerCard: React.FC<{ player: PlayerState }> = ({ player }) => {
   };
 
   return (
-    <Paper
-      elevation={3}
-      sx={{
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        borderRadius: 2,
-        overflow: 'hidden',
+    <GlobalCard
+      style={{
+        padding: '15px',
+        backgroundColor: 'rgb(226, 232, 243, .7)',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
-      {/* Character Header */}
-      <Box sx={{ p: 2, backgroundColor: 'rgba(44, 62, 80, 0.05)' }}>
-        <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
+      {/* Player Image and Basic Info */}
+
+      <Box sx={{ flex: 1 }}>
+        <Typography variant="h6" gutterBottom>
           {player.character}
         </Typography>
-        <Typography variant="subtitle2" color="text.secondary">
-          {player.name} • Level {player.level} {player.character_class}
+        <Typography variant="body2" color="text.secondary">
+          Player: {player.name}
+        </Typography>
+        <Typography variant="body2">
+          AC: {player.armor_class} | Initiative: +{player.initiative_bonus}
         </Typography>
       </Box>
 
-      {/* Stats Section */}
-      <Box sx={{ p: 2 }}>
-        {/* HP Management */}
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-            Hit Points
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <OutlinedInput
-              type="number"
-              value={formValues.newHp}
-              onChange={(e) =>
-                setFormValues((prev) => ({ ...prev, newHp: e.target.value }))
-              }
-              size="small"
-              sx={{ width: '80px' }}
-            />
-            <Typography>/ {player.total_hp}</Typography>
-            <ButtonContained
-              onClick={handleHpUpdate}
-              style={{ marginLeft: 'auto' }}
-            >
-              Update
-            </ButtonContained>
+      {/* HP Management */}
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="body1" sx={{ mb: 1 }}>
+          Hit Points:
+        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <input
+            type="number"
+            name="newHp"
+            value={formValues.newHp}
+            onChange={handleHpUpdate}
+            style={{
+              width: '60px',
+              height: '32px',
+              padding: '4px 8px',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+            }}
+          />
+          <Typography>/ {player.total_hp}</Typography>
+          <ButtonContained
+            height="32px"
+            onClick={handleHpUpdate}
+            style={{ fontSize: '0.75rem', padding: '4px 8px' }}
+          >
+            Update
+          </ButtonContained>
+        </Box>
+      </Box>
+
+      <Divider sx={{ my: 2 }} />
+
+      {/* Conditions Section */}
+      <Box sx={{ mb: 2, flex: 1 }}>
+        <Typography variant="h6" gutterBottom>
+          Active Conditions
+        </Typography>
+
+        {playerConditionsWithNames.length > 0 ? (
+          <Box sx={{ mb: 2 }}>
+            {playerConditionsWithNames.map((condition) => (
+              <Box key={condition.id} sx={{ mb: 1 }}>
+                <ConditionItem condition={condition} />
+              </Box>
+            ))}
           </Box>
-        </Box>
-
-        {/* Basic Stats */}
-        <Grid container spacing={2} sx={{ mb: 2 }}>
-          <Grid item xs={6}>
-            <Typography variant="subtitle2" color="text.secondary">
-              Armor Class
-            </Typography>
-            <Typography variant="body1">{player.armor_class}</Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="subtitle2" color="text.secondary">
-              Initiative
-            </Typography>
-            <Typography variant="body1">+{player.initiative_bonus}</Typography>
-          </Grid>
-        </Grid>
-
-        <Divider sx={{ my: 2 }} />
-
-        {/* Conditions Section */}
-        <Box sx={{ mt: 2 }}>
-          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-            Active Conditions
+        ) : (
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            No active conditions
           </Typography>
-
-          <Stack spacing={1} sx={{ mb: 2 }}>
-            {playerConditionsWithNames.length > 0 ? (
-              playerConditionsWithNames.map((condition) => (
-                <ConditionItem key={condition.id} condition={condition} />
-              ))
-            ) : (
-              <Typography color="text.secondary" variant="body2">
-                No active conditions
-              </Typography>
-            )}
-          </Stack>
-        </Box>
+        )}
 
         {/* Add Condition */}
-        <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-          <OutlinedInput
-            type="number"
-            placeholder="Duration"
-            size="small"
-            value={formValues.conditionLength}
-            onChange={(e) =>
-              setFormValues((prev) => ({
-                ...prev,
-                conditionLength: e.target.value,
-              }))
-            }
-            sx={{ width: '100px' }}
-          />
-          <FormControl sx={{ flexGrow: 1 }}>
-            <Select
-              value={formValues.conditionId}
+        <Typography variant="subtitle2" gutterBottom>
+          Add Condition:
+        </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <input
+              style={{
+                width: '60px',
+                height: '32px',
+                padding: '4px 8px',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+              }}
+              type="number"
+              name="conditionLength"
+              value={formValues.conditionLength}
               onChange={(e) =>
                 setFormValues((prev) => ({
                   ...prev,
-                  conditionId: e.target.value,
+                  conditionLength: e.target.value,
                 }))
               }
-              size="small"
-              displayEmpty
-            >
-              <MenuItem value="" disabled>
-                Select Condition
-              </MenuItem>
-              {conditions
-                .filter((condition) => condition.name !== 'None')
-                .map((condition) => (
-                  <MenuItem key={condition.id} value={condition.id}>
-                    {condition.name}
-                  </MenuItem>
-                ))}
-            </Select>
-          </FormControl>
-        </Box>
-        <ButtonContained
-          onClick={handleConditionAdd}
-          style={{ width: '100%', marginBottom: '8px' }}
-        >
-          Add Condition
-        </ButtonContained>
+              placeholder="Rounds"
+            />
 
-        {/* Remove from View */}
+            <FormControl size="small" sx={{ flex: 1 }}>
+              <Select
+                value={formValues.conditionId}
+                onChange={(e) =>
+                  setFormValues((prev) => ({
+                    ...prev,
+                    conditionId: e.target.value,
+                  }))
+                }
+                displayEmpty
+                sx={{ height: '32px' }}
+              >
+                <MenuItem value="" disabled>
+                  Select condition
+                </MenuItem>
+                {conditions.map(
+                  (condition) =>
+                    condition.name !== 'None' && (
+                      <MenuItem key={condition.id} value={condition.id}>
+                        {condition.name}
+                      </MenuItem>
+                    )
+                )}
+              </Select>
+            </FormControl>
+          </Box>
+
+          <ButtonContained
+            height="32px"
+            onClick={handleConditionAdd}
+            disabled={!formValues.conditionId || !formValues.conditionLength}
+            style={{ fontSize: '0.75rem' }}
+          >
+            Add Condition
+          </ButtonContained>
+        </Box>
+      </Box>
+
+      {/* Remove Button */}
+      <Box sx={{ mt: 'auto' }}>
         <ButtonContained
           onClick={handleRemove}
           style={{
             width: '100%',
-            backgroundColor: '#d32f2f',
-          }}
-          sx={{
-            '&:hover': {
-              backgroundColor: '#9a0007',
-            },
+            backgroundColor: '#f44336',
+            color: 'white',
           }}
         >
-          Remove from View
+          Remove from Game View
         </ButtonContained>
       </Box>
-    </Paper>
+    </GlobalCard>
   );
 };
 
