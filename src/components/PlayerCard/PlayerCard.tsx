@@ -28,12 +28,7 @@ const PlayerCard: React.FC<{ player: PlayerState }> = ({ player }) => {
   const conditions = useSelector(
     (state: RootState) => state.condition.conditions
   );
-  //   const playerConditions = useSelector((state: RootState) =>
-  //     state.playerCondition.playerConditions.filter(
-  //       (pc) => pc.player_id === player.id
-  //     )
-  //   );
-
+  
   const playerConditionsWithNames = useSelector((state: RootState) =>
     state.playerCondition.playerConditions
       .filter((pc) => pc.player_id === player.id)
