@@ -28,7 +28,7 @@ const PlayerCard: React.FC<{ player: PlayerState }> = ({ player }) => {
   const conditions = useSelector(
     (state: RootState) => state.condition.conditions
   );
-  
+
   const playerConditionsWithNames = useSelector((state: RootState) =>
     state.playerCondition.playerConditions
       .filter((pc) => pc.player_id === player.id)
@@ -159,7 +159,7 @@ const PlayerCard: React.FC<{ player: PlayerState }> = ({ player }) => {
         </Typography>
       </Box>
 
-      {/* Character Image */}
+      {/* Character Image
       <Box
         sx={{
           width: '100%',
@@ -180,7 +180,7 @@ const PlayerCard: React.FC<{ player: PlayerState }> = ({ player }) => {
             objectFit: 'cover',
           }}
         />
-      </Box>
+      </Box> */}
 
       {/* Stats Section */}
       <Box sx={{ p: 2 }}>
