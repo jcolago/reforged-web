@@ -41,7 +41,7 @@ interface GameStore{
 
 export const useGameStore = create<GameStore>()(
     devtools(
-        immer((set, get) => ({
+        immer((set) => ({
             //initial state
             games: [],
             currentGame: null,
