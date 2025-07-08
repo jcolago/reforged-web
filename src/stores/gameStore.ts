@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
+import { devtools} from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { gameService } from "../api/service";
 
@@ -29,7 +29,7 @@ interface GameStore{
     error: string | null;
 
     //actions
-    fetchGames: () => Promise<void>;
+    fetchGames: (userId: number) => Promise<void>;
     fetchGame: (id: number) => Promise<void>;
     createGame: (gameData: GameCreate) => Promise<Game>;
     updateGame: (id: number, gameData: Partial<GameCreate>) => Promise<void>;
@@ -49,16 +49,16 @@ export const useGameStore = create<GameStore>()(
             error: null,
 
             //actions
-            fetchGames: async () => {
+            fetchGames: async (userId: number) => {
                 set((state) => {
                     state.isLoading = true,
                     state.error = null;
                 });
 
                 try {
-                    const response = await gameService.getGames();
+                    const response = await gameService.getGames(userId);
                     set((state) => {
-                        state.games = response.date;
+                        state.games = response.data;
                         state.isLoading = false;
                     })
                 } catch (error: any) {
@@ -79,7 +79,7 @@ export const useGameStore = create<GameStore>()(
                     set((state) => {
                         state.currentGame = game;
                         
-                        const index = state.games.findIndex(g => g.id = id);
+                        const index = state.games.findIndex(g => g.id === id);
                         if (index != -1) {
                             state.games[index] = game;
                         } else {
@@ -118,7 +118,73 @@ export const useGameStore = create<GameStore>()(
                     throw error;
                 }
             },
-            
-        }))
+
+            updateGame: async (id: number, gameData: Partial<GameCreate>) => {
+                set((state) => { state.isLoading = true; })
+
+                try{
+                    const response = await gameService.updateGame(id, gameData);
+                    const updatedGame = response.data;
+
+                    set((state) => {
+                        const index = state.games.findIndex(g => g.id === id);
+                        if (index != -1){
+                            state.games[index] = updatedGame;
+                        }
+                        if (state.currentGame?.id === id){
+                            state.currentGame = updatedGame;
+                        }
+                        state.isLoading = false;
+                        state.error = null;
+                    });
+                } catch (error: any) {
+                    set((state) => {
+                        state.error = error.response?.data?.errors || 'Failed to update game';
+                        state.isLoading = false;
+                    });
+                    throw error;
+                }
+            },
+
+            deleteGame: async (id: number) => {
+                set((state) => { state.isLoading = true; })
+                
+                try{
+                    await gameService.deleteGame(id);
+
+                    set((state) => {
+                        state.games = state.games.filter(g => g.id != id);
+                        if (state.currentGame?.id === id){
+                            state.currentGame = null;
+                        }
+                        state.isLoading = false;
+                        state.error = null;
+                    });
+                } catch (error: any) {
+                    set((state) => {
+                        state.error = error.response?.data?.errors || 'Failed to delete game';
+                        state.isLoading = false;
+                    });
+                    throw error;
+                }
+            },
+
+            setCurrentGame: (game) => set((state) => { state.currentGame = game; }),
+
+            clearError: () => set((state) => { state.error = null; }),
+
+            reset: () => set((state) => {
+                state.games = [];
+                state.currentGame = null;
+                state.isLoading = false;
+                state.error = null;
+            }),
+        })),
+        {name: 'game-store'}
     )
-)
+);
+
+export const useGames = () => useGameStore((state) => state.games);
+export const useCurrentGame = () => useGameStore((state) => state.currentGame);
+export const useGameByDm = (dmId: number) => useGameStore((state) => state.games.filter(game => game.dm_id === dmId));
+export const useGameById = (id: number) => useGameStore((state) => state.games.find(game => game.id ===id));
