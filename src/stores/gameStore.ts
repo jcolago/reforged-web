@@ -68,6 +68,56 @@ export const useGameStore = create<GameStore>()(
                     });
                 };
             },
+
+            fetchGame: async (id: number) => {
+                set((state) => { state.isLoading = true; });
+
+                try{
+                    const response = await gameService.getGame(id);
+                    const game = response.data;
+
+                    set((state) => {
+                        state.currentGame = game;
+                        
+                        const index = state.games.findIndex(g => g.id = id);
+                        if (index != -1) {
+                            state.games[index] = game;
+                        } else {
+                            state.games.push(game);
+                        }
+                        state.isLoading = false;
+                    });
+                } catch (error: any) {
+                    set((state) => {
+                        state.error = error.response?.data.errors || 'Failed to fetch game';
+                        state.isLoading = false;
+                    });
+                }
+            },
+
+            createGame: async (gameData: GameCreate) => {
+                set((state) => { state.isLoading = true; });
+
+                try{
+                    const response = await gameService.createGame(gameData);
+                    const newGame = response.data;
+
+                    set((state) => {
+                        state.games.push(newGame);
+                        state.currentGame = newGame;
+                        state.isLoading = false;
+                        state.error = null;
+                    });
+
+                    return newGame;
+                } catch (error: any) {
+                    set((state) => {
+                        state.error = error.response?.data?.errors || 'Failed to create game';
+                        state.isLoading = false;
+                    });
+                    throw error;
+                }
+            },
             
         }))
     )
