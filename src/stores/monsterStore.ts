@@ -92,6 +92,30 @@ export const useMonsterStore = create<MonsterStore>()(
                     });
                 }
             },
+
+            addMonster: async (monsterData) => {
+                set((state) => {state.isLoading = true; })
+
+                try{
+                    const response = await monsterService.addMonster(monsterData);
+                    const newMonster = response.data;
+
+                    set((state) => {
+                        state.monsters.push(newMonster);
+                        state.isLoading = false;
+                        state.error = null;
+                    });
+
+                    return newMonster;
+                } catch (error: any) {
+                    set((state) => {
+                        state.error = error.response?.data?.error || 'Failed to add monster';
+                        state.isLoading = false;
+                    });
+                    throw error;
+                }
+            },
+
             
         }))
     )
