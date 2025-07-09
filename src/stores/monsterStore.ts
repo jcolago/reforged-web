@@ -142,7 +142,7 @@ export const useMonsterStore = create<MonsterStore>()(
                     throw error;
                 }
             },
-            
+
             removeMonster: async (id) => {
                 set((state) => { state.isLoading = true; });
 
@@ -166,6 +166,16 @@ export const useMonsterStore = create<MonsterStore>()(
                 }
             },
 
+            toggleMonsterDisplay: (id) => {
+                set((state) => {
+                    const monster = state.monsters.find(m => m.id === id);
+                    if (monster) {
+                        monster.displayed = !monster.displayed;
+                    }
+                });
+            },
+
+            
         }))
     )
 )
