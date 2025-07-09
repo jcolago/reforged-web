@@ -116,7 +116,56 @@ export const useMonsterStore = create<MonsterStore>()(
                 }
             },
 
+            updateMonster: async (id, monsterData) => {
+                set((state) => { state.isLoading = true; })
+
+                try {
+                    const response = await monsterService.updateMonster(id, monsterData);
+                    const updatedMonster = response.data;
+
+                    set((state) => {
+                        const index = state.monsters.findIndex(m => m.id === id);
+                        if (index != -1) {
+                            state.monsters[index] = updatedMonster;
+                        }
+                        if (state.currentMonster?.id === id) {
+                            state.currentMonster = updatedMonster
+                        }
+                        state.isLoading = false;
+                        state.error = null;
+                    });
+                } catch (error: any) {
+                    set((state) => {
+                        state.error = error.response?.data?.error || 'Failed to update monster';
+                        state.isLoading = false;
+                    })
+                    throw error;
+                }
+            },
             
+            removeMonster: async (id) => {
+                set((state) => { state.isLoading = true; });
+
+                try {
+                    await monsterService.removeMonster(id);
+
+                    set ((state) => {
+                        state.monsters = state.monsters.filter(m => m.id != id);
+                        if (state.currentMonster?.id === id) {
+                            state.currentMonster = null;
+                        }
+                        state.isLoading = false;
+                        state.error = null;
+                    });
+                } catch (error: any) {
+                    set((state) => {
+                        state.error = error.response?.data?.error || 'Failed to remove monster';
+                        state.isLoading = false;
+                    })
+                    throw error;
+                }
+            },
+
         }))
     )
 )
