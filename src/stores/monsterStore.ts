@@ -35,6 +35,8 @@ export interface MonsterState{
     speed: number;
     p_bonus: number;
     resistances: string;
+    attacks: string;
+    displayed: boolean;
     size: MonsterSize;
     alignment: MonsterAlignment;
     game_id: number;
@@ -42,7 +44,7 @@ export interface MonsterState{
 
 interface MonsterStore{
     //state
-    monsters: MonsterStore[];
+    monsters: MonsterState[];
     currentMonster: MonsterState | null;
     isLoading: boolean;
     error: string | null;
@@ -58,3 +60,39 @@ interface MonsterStore{
     clearError: () => void;
     reset: () => void;
 }
+
+export const useMonsterStore = create<MonsterStore>()(
+    devtools(
+        immer((set, get) => ({
+            monsters: [],
+            currentMonster: null,
+            isLoading: false,
+            error: null,
+
+            get displayedMonsters() {
+                return get().monsters.filter(monster => monster.displayed);
+            },
+
+            fetchMonsters: async () => {
+                set((state) => {
+                    state.isLoading = true;
+                    state.error = null;
+                });
+
+                try {
+                    const response = await monsterService.getMonsters();
+                    set((state) => {
+                        state.monsters = response.data;
+                        state.isLoading = false;
+                    });
+                } catch (error: any) {
+                    set((state) => {
+                        state.error = error.response?.data?.error || 'Failed to fetch monsters';
+                        state.isLoading = false;
+                    });
+                }
+            },
+            
+        }))
+    )
+)
