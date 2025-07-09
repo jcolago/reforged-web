@@ -175,7 +175,26 @@ export const useMonsterStore = create<MonsterStore>()(
                 });
             },
 
-            
-        }))
+            setCurrentMonster: (monster) => set((state) => {
+                state.currentMonster = monster;
+            }),
+
+            clearError: () => set((state) => { state.error = null; }),
+
+            reset: () => set((state) => {
+                state.monsters = [],
+                state.currentMonster = null;
+                state.isLoading = false;
+                state.error = null;
+            }),
+        })),
+        { name: 'monster-store' }
     )
-)
+);
+
+//hooks
+export const useMonsters = () => useMonsterStore((state) => state.monsters);
+export const useDisplayedMonsters = () => useMonsterStore((state) => state.displayedMonsters);
+export const useCurrentMonster = () => useMonsterStore((state) => state.currentMonster);
+export const useMonsterById = (id: number) => useMonsterStore((state) => state.monsters.find(m => m.id === id));
+export const useMonstersByGame = (gameId: number) => useMonsterStore((state) => state.monsters.filter(m => m.game_id === gameId))
