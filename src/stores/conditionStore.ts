@@ -120,7 +120,15 @@ export const useConditionStore = create<ConditionStore>() (
                     throw error;
                 }
             },
-            
-        }))
+
+            clearError: () => set((state) => { state.error = null; });
+
+            reset: () => set((state) => {
+                state.conditions = [];
+                state.isLoading = false;
+                state.error = null;
+            }),
+        })),
+        { name: 'condition-store' }
     )
-)
+);
