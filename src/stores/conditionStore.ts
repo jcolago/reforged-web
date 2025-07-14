@@ -77,6 +77,30 @@ export const useConditionStore = create<ConditionStore>() (
                     throw error;
                 }
             },
+
+            updateCondition: async (id, conditionData) => {
+                set((state) => { state.isLoading = true; });
+
+                try {
+                    const response = await conditionService.updateCondition(id, conditionData);
+                    const updatedCondition = response.data;
+
+                    set((state) => {
+                        const index = state.conditions.findIndex(c => c.id === id);
+                        if (index != -1) {
+                            state.conditions[index] = updatedCondition;
+                        }
+                        state.isLoading = false;
+                        state.error = null;
+                    });
+                } catch (error: any) {
+                    set((state) => {
+                        state.error = error.response?.data?.errors || 'Failed to update condition';
+                        state.isLoading = false;
+                    });
+                    throw error;
+                }
+            },
             
         }))
     )
