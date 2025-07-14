@@ -121,7 +121,7 @@ export const useConditionStore = create<ConditionStore>() (
                 }
             },
 
-            clearError: () => set((state) => { state.error = null; });
+            clearError: () => set((state) => { state.error = null; }),
 
             reset: () => set((state) => {
                 state.conditions = [];
@@ -132,3 +132,8 @@ export const useConditionStore = create<ConditionStore>() (
         { name: 'condition-store' }
     )
 );
+
+//hooks
+export const useConditions = () => useConditionStore((state) => state.conditions);
+export const useAvailableConditions = () => useConditionStore((state) => state.availableConditions);
+export const useConditionsById = (id: number) => useConditionStore((state) => state.conditions.find(c => c.id === id));
