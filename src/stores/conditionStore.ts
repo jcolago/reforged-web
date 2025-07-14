@@ -21,3 +21,40 @@ interface ConditionStore {
     clearError: () => void;
     reset: () => void;
 }
+
+export const useConditionStore = create<ConditionStore>() (
+    devtools(
+        immer((set, get) => ({
+            //initial state
+            conditions: [],
+            isLoading: false,
+            error: null,
+
+            get availableConditions() {
+                return get().conditions.filter(condition => condition.name != "None");
+            },
+
+            //actions
+            fetchConditions: async () => {
+                set ((state) => {
+                    state.isLoading = true;
+                    state.error = null;
+                });
+
+                try {
+                    const response = await conditionService.getConditions();
+                    set((state) => {
+                        state.conditions = response.data;
+                        state.isLoading = false;
+                    });
+                } catch (error: any) {
+                    set((state) => {
+                        state.error = error.response?.data?.errors || 'Failed to fetch conditions';
+                        state.isLoading = false;
+                    });
+                }
+            },
+            
+        }))
+    )
+)
