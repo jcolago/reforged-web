@@ -101,6 +101,25 @@ export const useConditionStore = create<ConditionStore>() (
                     throw error;
                 }
             },
+
+            deleteCondition: async (id) => {
+                set((state) => { state.isLoading = true; });
+
+                try {
+                    await conditionService.deleteCondition(id);
+
+                    set((state) => {
+                        state.conditions = state.conditions.filter(c => c.id != id);
+                        state.isLoading = false;
+                        state.error = null;
+                    });
+                } catch (error: any) {
+                    set((state) => {
+                        state.error = error.response?.data?.errors || 'Failed to delete condition';
+                    });
+                    throw error;
+                }
+            },
             
         }))
     )
