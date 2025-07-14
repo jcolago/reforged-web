@@ -54,6 +54,29 @@ export const useConditionStore = create<ConditionStore>() (
                     });
                 }
             },
+
+            createCondition: async (name: string) => {
+                set((state) => { state.isLoading = true; });
+
+                try{
+                    const response = await conditionService.createCondition({ name });
+                    const newCondition = response.data;
+
+                    set((state) => {
+                        state.conditions.push(newCondition);
+                        state.isLoading = false;
+                        state.error = null;
+                    });
+
+                    return newCondition;
+                } catch (error: any) {
+                    set((state) => {
+                        state.error = error.response?.data?.errors || 'Failed to creat condition';
+                        state.isLoading = false;
+                    });
+                    throw error;
+                }
+            },
             
         }))
     )
